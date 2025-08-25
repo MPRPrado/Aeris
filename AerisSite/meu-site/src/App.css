@@ -1,0 +1,394 @@
+body {
+  background: #fff;
+}
+
+#root {
+  background: #fff;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start; /* topo */
+  min-height: 100vh;
+}
+
+.logoEris {
+  font-size: 4em;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.05em; /* Diminua o gap para aproximar a imagem do texto */
+  margin-left: 50px; /* empurra tudo para a direita */
+}
+
+
+.logo-eris-palavra {
+  font-size: 1em;      /* herda o tamanho do .logoEris (4em) */
+  font-weight: bold;
+  color: #000;
+  display: flex;
+  align-items: center;
+}
+
+.upside-down-v {
+  display: inline-block;
+  transform: rotate(180deg);
+  margin-right: -0.08em; /* Valor negativo para aproximar o "eris" do V */
+  position: relative;
+  top: 0.10em; /* Mantém o V na mesma posição vertical */
+  color: #000;
+}
+
+.logo-img {
+  width: 1.5em;
+  height: 1.5em;
+  object-fit: contain;
+  margin: 0;         /* Certifique-se que não há margin */
+  padding: 0;
+}
+
+.sub-frase {
+  font-size: 1.5em;
+  margin-top: 0; /* Totalmente próximo da logo */
+  color: #000;
+}
+
+.sub-sub-frase {
+  font-size: 1em;
+  margin-top: -2em; /* Totalmente próximo da logo */
+  color: #8a8a8a;
+}
+
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  position: relative;
+}
+
+.input-icon {
+  width: 1.3em;
+  height: 1.3em;
+  margin-right: 0.5em;
+  opacity: 0.7;
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+}
+
+.input-Escrita {
+  font-size: 1em;
+  padding: 0.5em 1em 0.5em 3em; /* padding-left maior para o ícone */
+  padding-top: 1em;
+  padding-bottom: 1em;
+  margin-top: 0;
+  border: 1px solid #8a8a8a;
+  border-radius: 0.5em;
+  outline: none;
+  color: #8a8a8a;
+  background: #f3f3f3;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Estilo para o botão de mostrar senha */
+.mostrar-senha {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #8a8a8a;
+  cursor: pointer;
+  font-size: 0.9em;
+  padding: 5px 10px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.mostrar-senha:hover {
+  background-color: #e0e0e0;
+}
+
+/* Ajuste para o input de senha com botão */
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  position: relative;
+}
+
+.input-wrapper .input-Escrita {
+  padding-right: 80px; /* Espaço para o botão */
+}
+
+/* Cor do placeholder igual à borda */
+.input-Escrita::placeholder {
+  color: #8a8a8a;
+  opacity: 1;
+}
+
+.form-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 500px;      /* aumente este valor para deixar mais larga */
+  max-width: 100%;
+  margin-top: 0;
+}
+
+.texto-acima {
+  font-size: 1.1em;
+  margin: 0 0 0.2em 0;
+  color: #8a8a8a;
+  text-align: left;
+  width: 100%;      /* Alinha com a caixa de texto */
+  padding-left: 0;
+}
+
+.botao-criar-conta {
+  width: 400px;
+  padding: 0.8em 0;
+  background: #FC991A;
+  color: #fff;
+  border: none;
+  border-radius: 0.5em;
+  font-size: 1.2em;
+  cursor: pointer;
+  margin: 0 auto;
+  display: block;
+  transition: background 0.2s;
+}
+
+.botao-criar-conta:hover {
+  background: #FC991A;
+}
+
+.botao-link {
+  background: none;
+  border: none;
+  color: #FC991A;
+  font-size: 1em;
+  text-decoration: underline;
+  cursor: pointer;
+  margin-top: 1em;
+  transition: color 0.2s;
+  padding: 0;
+}
+
+.botao-link:hover {
+  color: #b86a00;
+  text-decoration: underline;
+}
+
+/* Logo da Tela Principal */
+/* Nova logo no canto superior esquerdo */
+.logoErisPequena {
+  font-size: 2em; /* maior que antes */
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.1em;
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  margin: 0;
+  z-index: 1000;
+}
+
+.logoErisPequena .logo-img-pequena {
+  width: 1.4em; /* aumentei o ícone */
+  height: 1.4em;
+  object-fit: contain;
+  margin: 0;
+  padding: 0;
+}
+
+.logoErisPequena .logo-eris-palavra-pequena {
+  font-size: 1em; /* acompanha o tamanho da fonte principal */
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  color: #000;
+}
+
+.logoErisPequena .upside-down-v-pequena {
+  display: inline-block;
+  transform: rotate(180deg);
+  margin-right: -0.08em;
+  position: relative;
+  top: 0.05em;
+  color: #000;
+}
+
+.frasePequena {
+  position: fixed;
+  top: 100px;   /* mais abaixo da logo */
+  left: 65px;  /* mais à direita da logo */
+  font-size: 2em;
+  color: #000000;
+  z-index: 999;
+}
+
+.usuarioContainer {
+  position: fixed;
+  top: 15px; /* mesma altura da logo */
+  right: 15px;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  font-size: 1.5em; /* mesmo tamanho da logo */
+  color: #000;
+  z-index: 1000;
+}
+
+.usuarioContainer img {
+  width: 1.4em; /* proporcional à logo */
+  height: 1.4em;
+  object-fit: contain;
+}
+
+.fraseSensoresConectados {
+  position: fixed;
+  top: 165px;
+  left: 65px;
+  right: 40px; /* pra linha ir até perto da borda direita */
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  font-size: 1.2em;
+  color: #000000;
+  z-index: 999;
+}
+
+/* Linha que vai esticar ao lado do texto */
+.fraseSensoresConectados .linha-horizontal {
+  flex-grow: 1;          /* linha ocupa o resto do espaço */
+  height: 1.5px;           /* espessura da linha */
+  background-color: #000000; /* cor da linha igual ao texto */
+  border-radius: 1px;
+  position: relative;
+  top: 0.1em; /* ajusta verticalmente a linha */
+}
+
+.fraseVejaRelatorios {
+  position: fixed;
+  top: 190px; /* um pouco abaixo da frase de sensores */
+  left: 65px;
+  font-size: 1em;
+  color: #8a8a8a;
+  z-index: 999;
+}
+
+/* Container vertical que segura os sensores */
+.sensoresContainer {
+  position: fixed;  /* mantém no lugar */
+  top: 255px;
+  left: 65px;
+  display: flex;
+  flex-direction: column; /* empilha verticalmente */
+  gap: 40px; /* espaçamento entre sensores */
+  z-index: 999;
+}
+
+
+.circuloComFrase {
+  display: flex;
+  align-items: center;  /* Alinha verticalmente o círculo com o texto */
+  gap: 10px;
+}
+
+.textoSensorContainer {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.3;
+  width: 500px; 
+  max-width: 100%;
+  padding: 0; 
+  margin: 0;  
+  text-align: left; 
+}
+
+.circuloLaranja {
+  width: 20px;
+  height: 20px;
+  background-color: orange;
+  border-radius: 50%;
+  margin-top: -1em;
+}
+
+.textoCirculo {
+  font-size: 1em;
+  color: #000;
+  cursor: pointer;
+}
+
+.textoCirculo:hover {
+  color: #ff6600;
+  text-decoration: underline;
+}
+
+.textoMenor {
+  font-size: 0.8em;
+  color: #555;
+  margin-left: 0;
+}
+
+.linhaAbaixoTextoMenor {
+  height: 1px;
+  background-color: #000000;
+  width: 100%;  /* ok */
+  margin-top: 10px;
+}
+
+.mensagemFixa {
+  position: fixed;
+  top: 225px;
+  left: 700px;
+  width: 500px;
+  background-color: #ffac75;
+  padding: 20px;
+  border-radius: 8px;
+  color: #333;
+  font-size: 1.1em;
+  line-height: 1.5;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  z-index: 999;
+}
+
+.suporteContainer {
+  position: fixed;
+  top: 500px; /* Distância do topo da tela */
+  left: 716px; /* Distância da esquerda da tela */
+  width: 500px; /* Largura do bloco */
+  text-align: center;
+  z-index: 999;
+}
+
+.textoSuporte {
+  font-size: 16px;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.botaoSuporte {
+  background-color: #ff6600;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.botaoSuporte:hover {
+  background-color: #e65c00;
+}

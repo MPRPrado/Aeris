@@ -1,0 +1,42 @@
+<!-- filepath: c:\Users\mathe\OneDrive\Área de Trabalho\Django\app_cad_usuario\templates\usuario\tela_inicial.html -->
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>AERIS - Tela Inicial</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #6dd5ed, #2193b0);
+            min-height: 100vh;
+        }
+        .aeris-title {
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 3rem;
+            font-weight: bold;
+            letter-spacing: 4px;
+            color: #fff;
+            text-shadow: 2px 2px 8px #2193b0;
+        }
+        .welcome-card {
+            background: rgba(255,255,255,0.95);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px 0 rgba(33,147,176,0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container d-flex flex-column justify-content-center align-items-center" style="min-height: 100vh;">
+    <div class="aeris-title mb-4">AERIS</div>
+    <div class="card welcome-card p-4">
+        <h2 class="text-primary mb-3">Seja bem-vindo {{ nome|default:"" }}!</h2>
+        <p class="lead">Estamos felizes em ter você aqui. Aproveite a experiência!</p>
+        <div class="d-flex flex-column gap-2 mt-4">
+            <a href="{% url 'home' %}" class="btn btn-outline-primary">Voltar para Cadastro</a>
+            <a href="{% url 'login' %}" class="btn btn-outline-secondary">Voltar para Login</a>
+            <a href="{% url 'listagem_usuarios' %}" class="btn btn-primary">Entrar na Listagem</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Status da Conexão Wi-Fi</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 400px;
+            margin: 60px auto;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 32px;
+            text-align: center;
+        }
+        .wifi-icon {
+            font-size: 48px;
+            color: #4caf50;
+            margin-bottom: 16px;
+        }
+        .status {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+        .info {
+            color: #555;
+        }
+    </style>
+    <!-- Ícone Wi-Fi via CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="wifi-icon">
+            <i class="fa-solid fa-wifi"
+               style="color: {% if conectado %}#4caf50{% else %}#bdbdbd{% endif %};"></i>
+        </div>
+        <div class="status">
+            {% if conectado %}
+                <span style="color: #4caf50;">Conectado</span>
+            {% else %}
+                <span style="color: #f44336;">Desconectado</span>
+            {% endif %}
+        </div>
+        <div class="info">
+            <strong>Nome da Rede (SSID):</strong> {{ ssid }}<br>
+            <strong>Endereço IP:</strong> {{ ip }}<br>
+            <strong>Intensidade do Sinal:</strong> {{ sinal }}%
+        </div>
+        <a href="{% url 'tela_inicial' %}" class="btn btn-outline-primary mt-4">Voltar para Tela Inicial</a>
+    </div>
+</body>
+</html>
