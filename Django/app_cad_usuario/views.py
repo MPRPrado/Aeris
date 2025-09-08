@@ -6,9 +6,16 @@ def home(request):
     return render(request, 'usuario/home.html')
 def usuario(request):
     if request.method == 'POST':  
+        email = request.POST.get('email')
+        if Usuario.objects.filter(email=email).exists():
+            contexto = {
+                'usuarios': Usuario.objects.all(),
+                'error': 'Este e-mail já está cadastrado.'
+            }
+            return render(request, 'usuario/usuario.html', contexto)
         novo_usuario = Usuario()
         novo_usuario.nome = request.POST.get('nome')
-        novo_usuario.email = request.POST.get('email')
+        novo_usuario.email = email
         novo_usuario.senha = make_password(request.POST.get('senha'))
         novo_usuario.save()
         return redirect('listagem_usuarios')

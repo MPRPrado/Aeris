@@ -1,0 +1,13 @@
+Django==5.2.6
+djangorestframework==3.16.1
+django-cors-headers==4.7.0
+
+# Dependências científicas para previsão avançada
+numpy==2.3.2
+pandas==2.3.2
+scikit-learn==1.7.1
+scipy==1.16.1
+joblib==1.5.2
+python-dateutil==2.9.0.post0
+pytz==2025.2
+threadpoolctl==3.6.0

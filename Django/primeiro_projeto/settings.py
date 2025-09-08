@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'app_cad_usuario',
-    'wifi',
+    'mq135',
     'rest_framework',
     'corsheaders',
     'app_cad_usuario.Conexao_react',
