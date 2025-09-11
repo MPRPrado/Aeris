@@ -2,11 +2,10 @@ import './App.css'
 import { useNavigate } from 'react-router-dom';
 
 function App() {
-
   const navigate = useNavigate();
 
   return (
-    <>
+    <div className="tela-principal-fixa">
       <div className="logoErisPequena">
         <img
           src="/AerisLOGOsemBG 2.png"
@@ -29,44 +28,44 @@ function App() {
       </div>
 
       <div className="fraseSensoresConectados">
-  Sensores Conectados:
-  <div className="linha-horizontal"></div>
-  </div>
+        Sensores Conectados:
+        <div className="linha-horizontal"></div>
+      </div>
 
-  <div className="fraseVejaRelatorios">
+      <div className="fraseVejaRelatorios">
         Veja os relatórios e gráficos da emissão dos gases selecionando os sensores abaixo
       </div>
 
       <div className="sensoresContainer">
-  <div className="circuloComFrase">
-    <div className="circuloLaranja"></div>
-    <div className="textoSensorContainer">
-      <span
-        className="textoCirculo botaoSensor"
-        onClick={() => navigate('/sensor-mq2')}
-      >
-        Sensor MQ2 - Dados de captação: Dióxido de Carbono (Co2)
-      </span>
-      <span className="textoMenor">Gráfico e relatório disponíveis</span>
-      <div className="linhaAbaixoTextoMenor"></div>
-    </div>
-  </div>
+        <div className="circuloComFrase">
+          <div className="circuloLaranja"></div>
+          <div className="textoSensorContainer">
+            <span
+              className="textoCirculo botaoSensor"
+              onClick={() => navigate('/sensor-mq2')}
+            >
+              Sensor MQ2 - Dados de captação: Butano (C4H10)
+            </span>
+            <span className="textoMenor">Gráfico e relatório disponíveis</span>
+            <div className="linhaAbaixoTextoMenor"></div>
+          </div>
+        </div>
 
-  <div className="circuloComFrase">
-    <div className="circuloLaranja"></div>
-    <div className="textoSensorContainer">
-      <span
-        className="textoCirculo botaoSensor"
-        onClick={() => navigate('/sensor-mq7')}
-      >
-        Sensor MQ7 - Dados de captação: Propano(C3h8)
-      </span>
-      <span className="textoMenor">Gráfico e relatório disponíveis</span>
-      <div className="linhaAbaixoTextoMenor"></div>
-    </div>
-  </div>
+        <div className="circuloComFrase">
+          <div className="circuloLaranja"></div>
+          <div className="textoSensorContainer">
+            <span
+              className="textoCirculo botaoSensor"
+              onClick={() => navigate('/sensor-mq7')}
+            >
+              Sensor MQ7 - Dados de captação: Propano(C3h8)
+            </span>
+            <span className="textoMenor">Gráfico e relatório disponíveis</span>
+            <div className="linhaAbaixoTextoMenor"></div>
+          </div>
+        </div>
 
-  <div className="circuloComFrase">
+        <div className="circuloComFrase">
           <div className="circuloLaranja"></div>
           <div className="textoSensorContainer">
             <span
@@ -79,30 +78,29 @@ function App() {
             <div className="linhaAbaixoTextoMenor"></div>
           </div>
         </div>
-</div>
+      </div>
 
-<div className="mensagemFixa">
-  <h2>Informações Gerais dos Sensores</h2>
-  <p>
-    Aqui você pode acompanhar os dados em tempo real de todos os sensores conectados ao sistema,
-    analisar gráficos detalhados e gerar relatórios para monitoramento ambiental.
-    Fique atento às atualizações para garantir a qualidade do ar e a segurança do ambiente.
-  </p>
-</div>
+      <div className="mensagemFixa">
+        <h2>Informações Gerais dos Sensores</h2>
+        <p>
+          Aqui você pode acompanhar os dados em tempo real de todos os sensores conectados ao sistema,
+          analisar gráficos detalhados e gerar relatórios para monitoramento ambiental.
+          Fique atento às atualizações para garantir a qualidade do ar e a segurança do ambiente.
+        </p>
+      </div>
 
-<div className="suporteContainer">
-  <p className="textoSuporte">
-    Está enfrentando algum tipo de problema? Entre em contato com o suporte da equipe Aeris pelo botão abaixo
-  </p>
-  <button
-    className="botaoSuporte"
-    onClick={() => navigate('/contato-suporte')}
-  >
-    Contate o Suporte
-  </button>
-</div>
-
-    </>
+      <div className="suporteContainer">
+        <p className="textoSuporte">
+          Está enfrentando algum tipo de problema? Entre em contato com o suporte da equipe Aeris pelo botão abaixo
+        </p>
+        <button
+          className="botaoSuporte"
+          onClick={() => navigate('/contato-suporte')}
+        >
+          Contate o Suporte
+        </button>
+      </div>
+    </div>
   )
 }
 

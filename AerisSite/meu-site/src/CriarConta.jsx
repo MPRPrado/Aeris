@@ -35,7 +35,7 @@ function CriarConta() {
             <span className="upside-down-v">V</span>eris
           </span>
         </h1>
-        <p className="sub-frase">Inscreva-se em nossa plataforma!</p>
+        <p className="sub-frase shiny-text">Inscreva-se em nossa plataforma!</p>
       </div>
 
       <form className="form-container" onSubmit={handleSubmit}>
