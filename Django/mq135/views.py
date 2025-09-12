@@ -7,8 +7,6 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import DadosSensor
 
-SCIENTIFIC_LIBS_AVAILABLE = True
-
 dados_recebidos_lista = []
 #receber sensor
 @csrf_exempt
@@ -44,9 +42,6 @@ def receber_dados(request):
 
 #PrevisãoMensal
 def prever_dados_mensal(request, contador):
-    if not SCIENTIFIC_LIBS_AVAILABLE:
-        return _previsao_simples(contador)
-    
     # Calcular dia atual
     dia_atual = contador // 4
     dias_totais = 30
@@ -94,38 +89,6 @@ def prever_dados_mensal(request, contador):
         'previsoes': resultado
     })
 
-def _previsao_simples(contador):
-    """Previsão básica sem bibliotecas científicas"""
-    dia_atual = contador // 4
-    dias_totais = 30
-    
-    if dia_atual >= dias_totais:
-        return JsonResponse({'status': 'ok', 'mensagem': 'Previsão mensal já concluída'}, status=200)
-    
-    # Buscar leituras recentes
-    leituras = DadosSensor.objects.all().order_by('-timestamp')[:20]
-    if leituras.count() < 4:
-        return JsonResponse({'status': 'erro', 'mensagem': 'Leituras insuficientes para previsão.'}, status=400)
-    
-    # Calcular média simples das últimas leituras
-    media_co2 = sum(l.co2_ppm for l in leituras) / len(leituras)
-    
-    # Gerar previsões simples baseadas na média
-    resultado = []
-    for dia in range(dia_atual + 1, dias_totais + 1):
-        # Variação simples baseada no dia
-        variacao = (dia - dia_atual) * 0.5  # pequena variação
-        previsao = media_co2 + variacao
-        resultado.append({'dia': dia, 'previsao_ppm': round(previsao, 1)})
-    
-    return JsonResponse({
-        'status': 'ok',
-        'dia_atual': dia_atual,
-        'dias_totais': dias_totais,
-        'previsoes': resultado,
-        'metodo': 'previsao_simples'
-    })
-
 #HTML 
 def mostrar_dados(request):
     leituras = DadosSensor.objects.all().order_by('-id')[:50]  # últimas 50 leituras
@@ -152,7 +115,7 @@ def relatorio_view(request):
     
     # Criar dados de teste se não existirem
     if DadosSensor.objects.count() == 0:
-        for i in range(35):
+        for i in range(30):
             for j in range(4):
                 data = timezone.now() - timedelta(days=i, hours=j*6)
                 co2_valor = random.uniform(400, 1200)
