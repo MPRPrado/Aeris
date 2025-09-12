@@ -1,0 +1,44 @@
+<meta http-equiv="refresh" content="5">
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Leituras MQ-2 - Butano</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
+
+<div class="container mt-4">
+    <h2 class="mb-3 text-center">Leituras do Sensor MQ-2 (Butano)</h2>
+
+    <div class="mb-3">
+        <strong>Total de Registros:</strong> {{ total_registros }}
+    </div>
+
+    <table class="table table-striped table-hover table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Dispositivo</th>
+                <th>Butano (ppm)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for dado in dados %}
+            <tr>
+                <td>{{ dado.id }}</td>
+                <td>{{ dado.disp }}</td>
+                <td>{{ dado.butano }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3" class="text-center">Nenhum dado disponível</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>

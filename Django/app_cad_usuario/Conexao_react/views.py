@@ -5,7 +5,7 @@ from .serializer import UsuarioSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from mq135.models import DadosSensor
+from mq135.models import DadosSensor_mq135
 
 class UsuarioViewSet(viewsets.ModelViewSet):
     queryset = Usuario.objects.all()
@@ -13,14 +13,13 @@ class UsuarioViewSet(viewsets.ModelViewSet):
     
     @action(detail=False, methods=['get'])
     def relatorio(self, request):
-        usuarios = self.get_queryset()
-        return Response({"usuarios": len(usuarios)})
+        return Response({"usuarios": self.get_queryset().count()})
 
 class SensorDataAPI(APIView):
     def post(self, request):
         co2_ppm = request.data.get("CO2_ppm")
         if co2_ppm is not None:
-            DadosSensor.objects.create(co2_ppm=co2_ppm)
+            DadosSensor_mq135.objects.create(co2_ppm=co2_ppm)
             return Response({"message": "Dados salvos com sucesso"}, status=status.HTTP_201_CREATED)
         return Response({"error": "Valor inválido"}, status=status.HTTP_400_BAD_REQUEST)
 

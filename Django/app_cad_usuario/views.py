@@ -6,18 +6,29 @@ def home(request):
     return render(request, 'usuario/home.html')
 def usuario(request):
     if request.method == 'POST':  
+        nome = request.POST.get('nome')
         email = request.POST.get('email')
+        senha = request.POST.get('senha')
+        
+        if not all([nome, email, senha]):
+            contexto = {
+                'usuarios': Usuario.objects.all(),
+                'error': 'Todos os campos são obrigatórios.'
+            }
+            return render(request, 'usuario/usuario.html', contexto)
+            
         if Usuario.objects.filter(email=email).exists():
             contexto = {
                 'usuarios': Usuario.objects.all(),
                 'error': 'Este e-mail já está cadastrado.'
             }
             return render(request, 'usuario/usuario.html', contexto)
-        novo_usuario = Usuario()
-        novo_usuario.nome = request.POST.get('nome')
-        novo_usuario.email = email
-        novo_usuario.senha = make_password(request.POST.get('senha'))
-        novo_usuario.save()
+            
+        Usuario.objects.create(
+            nome=nome,
+            email=email,
+            senha=senha
+        )
         return redirect('listagem_usuarios')
     contexto = {
         'usuarios': Usuario.objects.all()
@@ -38,33 +49,11 @@ def login(request):
         email = request.POST.get('email')
         senha = request.POST.get('senha')
         
-        # Debug: imprimir valores recebidos
-        print(f"=== DEBUG LOGIN ===")
-        print(f"Email recebido: {email}")
-        print(f"Senha recebida: {senha}")
-        
         usuario = Usuario.objects.filter(email=email).first()
         
-        if usuario:
-            print(f"Usuário encontrado: {usuario.nome}")
-            print(f"Email no banco: {usuario.email}")
-            print(f"Senha no banco: {usuario.senha}")
-            print(f"Senha digitada: {senha}")
-            print(f"Senhas iguais? {usuario.senha == senha}")
-            
-            # Tenta autenticar
-            if usuario.senha == senha:
-                print("Login bem-sucedido com senha direta")
-                request.session['nome'] = usuario.nome
-                return redirect('tela_inicial')
-            elif check_password(senha, usuario.senha):
-                print("Login bem-sucedido com senha criptografada")
-                request.session['nome'] = usuario.nome
-                return redirect('tela_inicial')
-            else:
-                print("Senha incorreta")
-        else:
-            print("Usuário não encontrado")
+        if usuario and check_password(senha, usuario.senha):
+            request.session['nome'] = usuario.nome
+            return redirect('tela_inicial')
         
         return render(request, 'usuario/login.html', {'error': 'E-mail ou senha inválidos'})
     return render(request, 'usuario/login.html')
