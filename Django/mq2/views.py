@@ -9,43 +9,45 @@ from sklearn import linear_model
 from .models import DadosSensor_mq2
 
 # Receber dados do sensor MQ-2
-#@csrf_exempt
-#def receber_dados(request):
-#    if request.method == 'POST':
-#        try:
-#           data = json.loads(request.body.decode('utf-8'))
-#
-#           if 'Rs' not in data:
-#               return JsonResponse({'status': 'erro', 'mensagem': 'Campo Rs não encontrado'}, status=400)
-#
-#           Rs = float(data['Rs'])
-#           if Rs <= 0:
-#               return JsonResponse({'status': 'erro', 'mensagem': 'Valor Rs inválido'}, status=400)
-#
-#           # Calibração para Butano (C4H10)
-#           R0 = 32830.0
-#           A_BUTANO = 97.0
-#           B_BUTANO = -0.46
-#
-#           ratio = Rs / R0
-#           ppm = A_BUTANO * math.pow(ratio, B_BUTANO)
-#
-#           sensor_data = DadosSensor_mq2.objects.create(
-#               c4h10_ppm=ppm,
-#               dispositivo_id=data.get('device_id', 'ESP32_MQ2')
-#           )
-#           return JsonResponse({
-#                'status': 'ok',
-#                'mensagem': 'Dados recebidos e salvos',
-#                'id': sensor_data.id,
-#               'butano_ppm': ppm,
-#                'timestamp': sensor_data.timestamp.isoformat()
-#            })
-#
-#        except (ValueError, json.JSONDecodeError):
-#            return JsonResponse({'status': 'erro', 'mensagem': 'JSON inválido ou valor inválido'}, status=400)
-#
-#    return JsonResponse({'status': 'erro', 'mensagem': 'Método não permitido'}, status=405)
+@csrf_exempt
+def receber_dados(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body.decode('utf-8'))
+
+            if 'Rs' not in data:
+                return JsonResponse({'status': 'erro', 'mensagem': 'Campo Rs não encontrado'}, status=400)
+
+            Rs = float(data['Rs'])
+            if Rs <= 0:
+                return JsonResponse({'status': 'erro', 'mensagem': 'Valor Rs inválido'}, status=400)
+
+            # Calibração para Butano (C4H10)
+            R0 = 32830.0
+            A_BUTANO = 97.0
+            B_BUTANO = -0.46
+
+            ratio = Rs / R0
+            ppm = A_BUTANO * math.pow(ratio, B_BUTANO)
+
+            sensor_data = DadosSensor_mq2.objects.create(
+                co2_ppm=ppm,
+                dispositivo_id=data.get('device_id', 'ESP32_MQ2')
+            )
+
+            return JsonResponse({
+                'status': 'ok',
+                'mensagem': 'Dados recebidos e salvos',
+                'id': sensor_data.id,
+                'butano_ppm': ppm,
+                'timestamp': sensor_data.timestamp.isoformat()
+            })
+
+        except (ValueError, json.JSONDecodeError):
+            return JsonResponse({'status': 'erro', 'mensagem': 'JSON inválido ou valor inválido'}, status=400)
+
+    return JsonResponse({'status': 'erro', 'mensagem': 'Método não permitido'}, status=405)
+
 
 
 # Previsão mensal de dados MQ-2
@@ -102,7 +104,7 @@ def mostrar_dados(request):
 
     dados_formatados = [
         {
-            'butano': f"{dado.c4h10_ppm:.1f}",  # corrigido
+            'butano': f"{dado.co2_ppm:.1f}",
             'disp': dado.dispositivo_id,
             'id': dado.id
         } for dado in leituras
