@@ -51,7 +51,7 @@ from .models import DadosSensor_mq2
 # Previsão mensal de dados MQ-2
 def prever_dados_mensal(request, contador):
     # Calcular dia atual
-    dia_atual = contador // 4
+    dia_atual = contador // 6
     dias_totais = 30
     dias_faltantes = dias_totais - dia_atual
 
@@ -61,23 +61,23 @@ def prever_dados_mensal(request, contador):
     # Buscar todas as leituras
     leituras = DadosSensor_mq2.objects.all().order_by('timestamp')
 
-    if leituras.count() < 4:
+    if leituras.count() < 6:
         return JsonResponse({'status': 'erro', 'mensagem': 'Leituras insuficientes para previsão.'}, status=400)
 
     # Converter queryset para DataFrame
-    df = pd.DataFrame.from_records(leituras.values('timestamp', 'co2_ppm'))
+    df = pd.DataFrame.from_records(leituras.values('timestamp', 'c4h10_ppm'))
     df['timestamp'] = pd.to_datetime(df['timestamp'])
     df = df.sort_values('timestamp')
 
-    # Criar coluna 'dia' (cada 4 leituras = 1 dia)
-    df['dia'] = (np.arange(len(df)) // 4) + 1
+    # Criar coluna 'dia' (cada 6 leituras = 1 dia)
+    df['dia'] = (np.arange(len(df)) // 6) + 1
 
     # Calcular média PPM por dia
-    df_dias = df.groupby('dia')['co2_ppm'].mean().reset_index()
+    df_dias = df.groupby('dia')['c4h10_ppm'].mean().reset_index()
 
     # Regressão linear
     X = df_dias['dia'].values.reshape(-1, 1)
-    y = df_dias['co2_ppm'].values.reshape(-1, 1)
+    y = df_dias['c4h10_ppm'].values.reshape(-1, 1)
 
     modelo = linear_model.LinearRegression()
     modelo.fit(X, y)
@@ -102,7 +102,7 @@ def mostrar_dados(request):
 
     dados_formatados = [
         {
-            'butano': f"{dado.co2_ppm:.1f}",
+            'butano': f"{dado.c4h10_ppm:.1f}",  # corrigido
             'disp': dado.dispositivo_id,
             'id': dado.id
         } for dado in leituras

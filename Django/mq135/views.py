@@ -53,13 +53,22 @@ from .models import DadosSensor_mq135
 # Previsão mensal
 def prever_dados_mensal(request, contador):
     # Calcular dia atual
-    dia_atual = contador // 4
+    # Cada 6 leituras = 1 dia
+    dia_atual = contador // 6
     dias_totais = 30
     dias_faltantes = dias_totais - dia_atual
 
+    # Só começa a prever depois do 15º dia
+    if dia_atual < 15:
+        return JsonResponse({'status': 'ok', 'mensagem': 'Ainda coletando dados, previsão disponível apenas a partir do 15º dia'}, status=200)
+
+    # Só roda se fechou um dia completo
+    if contador % 6 != 0:
+        return JsonResponse({'status': 'ok', 'mensagem': 'Previsão gerada somente ao final de cada dia'}, status=200)
+
     if dias_faltantes <= 0:
         return JsonResponse({'status': 'ok', 'mensagem': 'Previsão mensal já concluída'}, status=200)
-
+    
     # Buscar todas as leituras
     leituras = DadosSensor_mq135.objects.all().order_by('timestamp')
     if leituras.count() < 4:
@@ -71,7 +80,7 @@ def prever_dados_mensal(request, contador):
     df = df.sort_values('timestamp')
 
     # Criar coluna 'dia' (cada 4 leituras = 1 dia)
-    df['dia'] = (np.arange(len(df)) // 4) + 1
+    df['dia'] = (np.arange(len(df)) // 6) + 1
 
     # Calcular média PPM por dia
     df_dias = df.groupby('dia')['co2_ppm'].mean().reset_index()

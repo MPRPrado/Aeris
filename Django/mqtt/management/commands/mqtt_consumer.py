@@ -8,7 +8,7 @@ MQTT_SERVER = "localhost"   # ajuste para o IP do seu broker
 MQTT_PORT = 1883
 
 def on_connect(client, userdata, flags, rc):
-    print("✅ Conectado ao broker MQTT")
+    print("Conectado ao broker MQTT")
     client.subscribe("sensores/mq135")
     client.subscribe("sensores/mq2")
 
@@ -34,8 +34,14 @@ def on_message(client, userdata, msg):
             print(f"MQ135 salvo no banco: {ppm:.2f} ppm")
 
         elif msg.topic == "sensores/mq2":
+            R0 = 32830.0
+            A_BUTANO = 97.0
+            B_BUTANO = -0.46
+
+            ratio = Rs / R0
+            ppm_mq2 = A_BUTANO * math.pow(ratio, B_BUTANO)
             DadosSensor_mq2.objects.create(
-                rs=Rs,
+                c4h10_ppm=ppm_mq2,
                 dispositivo_id="ESP32_MQ2"
             )
             print(f"MQ2 salvo no banco: Rs = {Rs:.2f}")
