@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-^3s^$n9f@)vsuy1q=52v)__d^1$1-#%8d-m+!ap(m51ehh*z5f
 DEBUG = True
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
-ALLOWED_HOSTS = ['192.168.0.107', 'localhost', '127.0.0.1', 'meusite.com']
+ALLOWED_HOSTS = ['192.168.137.67', 'localhost', '127.0.0.1', 'meusite.com']
 
 
 
@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'app_cad_usuario.Conexao_react',
+    'mqtt',
 ]
 
 MIDDLEWARE = [
@@ -59,9 +60,12 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
 ]
+
+# Permitir credenciais em requisições CORS
+CORS_ALLOW_CREDENTIALS = True
  
 ROOT_URLCONF = 'primeiro_projeto.urls'
 
@@ -134,3 +138,8 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 100
+}

@@ -5,31 +5,45 @@ from django.contrib.auth.hashers import make_password, check_password
 def home(request):
     return render(request, 'usuario/home.html')
 def usuario(request):
-    if request.method == 'POST':  
+    if request.method == 'POST':
         nome = request.POST.get('nome')
         email = request.POST.get('email')
         senha = request.POST.get('senha')
         
+        # Verificação dos campos vazios
         if not all([nome, email, senha]):
             contexto = {
                 'usuarios': Usuario.objects.all(),
                 'error': 'Todos os campos são obrigatórios.'
             }
             return render(request, 'usuario/usuario.html', contexto)
-            
+        
+        # Verificação de email existente usando exists()
         if Usuario.objects.filter(email=email).exists():
             contexto = {
                 'usuarios': Usuario.objects.all(),
-                'error': 'Este e-mail já está cadastrado.'
+                'error': 'Este e-mail já está cadastrado.',
+                'nome': nome  # Manter o nome preenchido no formulário
             }
             return render(request, 'usuario/usuario.html', contexto)
-            
-        Usuario.objects.create(
-            nome=nome,
-            email=email,
-            senha=senha
-        )
-        return redirect('listagem_usuarios')
+        
+        # Se passou pelas validações, cria o novo usuário
+        try:
+            novo_usuario = Usuario.objects.create(
+                nome=nome,
+                email=email,
+                senha=make_password(senha)
+            )
+            return redirect('listagem_usuarios')
+        except Exception as e:
+            contexto = {
+                'usuarios': Usuario.objects.all(),
+                'error': 'Erro ao criar usuário. Tente novamente.',
+                'nome': nome  # Manter o nome preenchido no formulário
+            }
+            return render(request, 'usuario/usuario.html', contexto)
+    
+    # GET request
     contexto = {
         'usuarios': Usuario.objects.all()
     }

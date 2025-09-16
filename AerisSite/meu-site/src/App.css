@@ -188,7 +188,42 @@ body {
   text-decoration: underline;
 }
 
-/* Logo da Tela Principal */
+.shiny-text {
+  position: relative;
+  display: inline-block;
+  background: linear-gradient(90deg, #000000, #8c8b8b 40%, #000000 60%, #8c8b8b 100%);
+  background-size: 200% auto;
+  color: #8c8b8b;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine 7s linear infinite;
+}
+
+@keyframes shine {
+  to {
+    background-position: 200% center;
+  }
+}
+
+/* ============= Logo da Tela Principal ===================== */
+
+.tela-principal-fixa {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow-y: auto;
+  background: #fff;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-bottom: 32px;
+}
+
 /* Nova logo no canto superior esquerdo */
 .logoErisPequena {
   font-size: 2em; /* maior que antes */
@@ -391,4 +426,173 @@ body {
 
 .botaoSuporte:hover {
   background-color: #e65c00;
+}
+
+/*======================== Tela do Sensor ===================== */
+
+/* Caixa centralizada para a tela do sensor */
+.caixa-central-sensor {
+  position: static;
+  background: #f6f6f6;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+  padding: 48px 40px;
+  min-width: 800px;
+  min-height: 420px;
+  display: flex;
+  flex-direction: column; /* Adicione esta linha */
+  align-items: flex-start; /* Para alinhar à esquerda */
+  justify-content: flex-start;
+  border: 2.5px solid #e3e3e3;
+  margin-left: -20px; /* ajuste o valor negativo conforme desejar */
+  min-height: 700px;
+}
+
+.pagina-sensor {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #fff;
+}
+
+/* Para a tela do sensor */
+.topo-sensor {
+  position: static; /* ou simplesmente remova qualquer position */
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff;
+  z-index: 1;
+  padding: 0 32px;
+  margin-top: 0;
+  margin-bottom: 32px;
+  box-shadow: none; /* remova sombra se não quiser destaque */
+}
+
+.container-duas-caixas-nao-centralizadas {
+  display: flex;
+  flex-direction: row;
+  gap: 32px;
+  width: 100%;
+  max-width: 1200px;
+  justify-content: flex-start;
+  align-items: flex-start;
+  margin-left: 10px; /* valor negativo para mover as caixas para a esquerda */
+  margin-top: -20px;  /* valor negativo para subir as caixas */
+}
+
+/* Nova caixa menor, mesma altura, largura menor */
+.caixa-lateral-menor {
+  background: #f6f6f6;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+  padding: 48px 24px;
+  min-width: 280px;
+  min-height: 560px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2.5px solid #e3e3e3;
+}
+
+.pagina-sensor-fixa {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #fff;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  overflow-y: auto;
+}
+
+.frase-topo-caixa-maior {
+  width: 100%;
+  text-align: left;
+  font-size: 1.1em;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 12px;
+  /* Remova ou comente o margin-top negativo */
+  /* margin-top: -440px; */
+  margin-left: -20px; /* Se quiser alinhar mais à esquerda, pode manter */
+  margin-top: -20px;
+}
+
+.frases-abaixo-grafico {
+  margin-top: 80px;
+  display: flex;
+  flex-direction: column;   /* <-- muda para coluna */
+  justify-content: flex-start;
+  align-items: flex-start;  /* ou center, se quiser centralizar */
+  gap: 8px;                 /* espaço entre as frases */
+  color: #444;
+  font-size: 1em;
+  line-height: 1.6;
+}
+
+.frases-abaixo-grafico p {
+  margin: 0;
+  white-space: normal; /* permite quebra de linha se necessário */
+}
+
+/* Para a tela do sensor: logo e usuário fixos no topo */
+.pagina-sensor .logoErisPequena {
+  position: static;
+  margin: 0;
+}
+
+.pagina-sensor .usuarioContainer {
+  position: static;
+}
+
+.frase-relatorio {
+  font-size: 1.1em;
+  color: #000000;
+  text-align: center;
+  font-weight: 500;
+  line-height: 1.5;
+  margin-top: -21px;
+  margin-left: -200px;
+}
+
+.frase-relatorio-menor {
+  font-size: 0.95em;
+  color: #666;
+  text-align: center;
+  font-weight: 400;
+  margin-top: 12px;
+}
+
+.frase-previsao-menor {
+  font-size: 0.95em;
+  color: #666;
+  text-align: center;
+  font-weight: 400;
+  margin-top: 12px;
+}
+
+.voltar-inicio-link {
+  color: #f08843;
+  font-size: 1.1em;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  transition: color 0.2s;
+  outline: none;
+  margin-left: -1000px;;
+  margin-top: 400px;
+}
+.voltar-inicio-link:hover,
+.voltar-inicio-link:focus {
+  color: #e86f1e;
+  text-decoration: underline;
 }
