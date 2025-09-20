@@ -4,28 +4,25 @@ from datetime import timedelta
 from django.utils import timezone
 from django.db import DatabaseError
 from sklearn import linear_model
-from .models import DadosSensor_mq135 as DadosSensor
+from .models import DadosSensor_mq7 as DadosSensor
 
 def gerar_relatorio():
     try:
         # Pegar últimas 180 leituras
-        dados = list(DadosSensor.objects.all().order_by('-timestamp')[:180].values_list("nh3_ppm", flat=True))
+        dados = list(DadosSensor.objects.all().order_by('-timestamp')[:180].values_list("co_ppm", flat=True))
         
         if len(dados) < 60:
             return "Sem dados suficientes."
         
         # Dividir em grupos para cálculos
-        # Últimas 60 leituras vs 60 anteriores (4 semanas)
-        dados_recentes = dados[:60]  # últimas 60
-        dados_anteriores = dados[60:120] if len(dados) >= 120 else dados[60:]  # 60 anteriores
+        dados_recentes = dados[:60]
+        dados_anteriores = dados[60:120] if len(dados) >= 120 else dados[60:]
         
         media_recentes = np.mean(dados_recentes)
         media_anteriores = np.mean(dados_anteriores) if dados_anteriores else media_recentes
         
-        # Variação 4 semanas
         variacao_4_semanas = abs(((media_anteriores - media_recentes) / media_anteriores) * 100) if media_anteriores != 0 else 0
         
-        # Variação início do mês (últimas 90 vs 90 anteriores)
         if len(dados) >= 180:
             dados_mes_atual = dados[:90]
             dados_mes_anterior = dados[90:180]
@@ -35,7 +32,6 @@ def gerar_relatorio():
         else:
             variacao_inicio_mes = variacao_4_semanas
             
-        # Aumento segunda semana (últimas 30 vs 30 anteriores)
         if len(dados) >= 60:
             dados_primeira_semana = dados[:30]
             dados_segunda_semana = dados[30:60]
@@ -47,42 +43,36 @@ def gerar_relatorio():
         
         # Calcular previsão usando Machine Learning
         try:
-            # Usar todas as leituras para ML
             todas_leituras = DadosSensor.objects.all().order_by('timestamp')
             if todas_leituras.count() >= 6:
-                df = pd.DataFrame.from_records(todas_leituras.values('timestamp', 'nh3_ppm'))
+                df = pd.DataFrame.from_records(todas_leituras.values('timestamp', 'co_ppm'))
                 df['timestamp'] = pd.to_datetime(df['timestamp'])
                 df = df.sort_values('timestamp')
                 df['dia'] = (np.arange(len(df)) // 6) + 1
-                df_dias = df.groupby('dia')['nh3_ppm'].mean().reset_index()
+                df_dias = df.groupby('dia')['co_ppm'].mean().reset_index()
                 
                 if len(df_dias) >= 2:
                     X = df_dias['dia'].values.reshape(-1, 1)
-                    y = df_dias['nh3_ppm'].values.reshape(-1, 1)
+                    y = df_dias['co_ppm'].values.reshape(-1, 1)
                     modelo = linear_model.LinearRegression()
                     modelo.fit(X, y)
                     
-                    # Prever próximos 14 dias
                     proximo_dia = df_dias['dia'].max() + 1
                     dias_futuros = np.arange(proximo_dia, proximo_dia + 14).reshape(-1, 1)
                     previsoes_ml = modelo.predict(dias_futuros)
                     
-                    # Calcular variação média das previsões
-                    variacao_ml = abs(np.mean(previsoes_ml) - df_dias['nh3_ppm'].iloc[-1]) / df_dias['nh3_ppm'].iloc[-1] * 100
+                    variacao_ml = abs(np.mean(previsoes_ml) - df_dias['co_ppm'].iloc[-1]) / df_dias['co_ppm'].iloc[-1] * 100
                     previsao_min = max(variacao_ml * 0.7, 3)
                     previsao_max = max(variacao_ml * 1.3, 8)
                 else:
-                    # Fallback para cálculo simples
                     tendencia = (variacao_4_semanas + variacao_inicio_mes) / 2
                     previsao_min = max(tendencia * 0.6, 3)
                     previsao_max = max(tendencia * 1.4, 8)
             else:
-                # Fallback para cálculo simples
                 tendencia = (variacao_4_semanas + variacao_inicio_mes) / 2
                 previsao_min = max(tendencia * 0.6, 3)
                 previsao_max = max(tendencia * 1.4, 8)
         except Exception:
-            # Fallback em caso de erro
             tendencia = (variacao_4_semanas + variacao_inicio_mes) / 2
             previsao_min = max(tendencia * 0.6, 3)
             previsao_max = max(tendencia * 1.4, 8)

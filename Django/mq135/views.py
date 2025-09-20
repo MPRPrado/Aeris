@@ -7,6 +7,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from sklearn import linear_model
 from .models import DadosSensor_mq135
+from .utils import gerar_relatorio
 
 
 # Receber dados do sensor
@@ -75,7 +76,7 @@ def prever_dados_mensal(request, contador):
         return JsonResponse({'status': 'erro', 'mensagem': 'Leituras insuficientes para previsão.'}, status=400)
 
     # Converter queryset para DataFrame
-    df = pd.DataFrame.from_records(leituras.values('timestamp', 'co2_ppm'))
+    df = pd.DataFrame.from_records(leituras.values('timestamp', 'nh3_ppm'))
     df['timestamp'] = pd.to_datetime(df['timestamp'])
     df = df.sort_values('timestamp')
 
@@ -83,11 +84,11 @@ def prever_dados_mensal(request, contador):
     df['dia'] = (np.arange(len(df)) // 6) + 1
 
     # Calcular média PPM por dia
-    df_dias = df.groupby('dia')['co2_ppm'].mean().reset_index()
+    df_dias = df.groupby('dia')['nh3_ppm'].mean().reset_index()
 
     # Regressão linear
     X = df_dias['dia'].values.reshape(-1, 1)
-    y = df_dias['co2_ppm'].values.reshape(-1, 1)
+    y = df_dias['nh3_ppm'].values.reshape(-1, 1)
 
     modelo = linear_model.LinearRegression()
     modelo.fit(X, y)
@@ -112,7 +113,7 @@ def mostrar_dados(request):
 
     dados_formatados = [
         {
-            'co2': f"{dado.co2_ppm:.1f}",
+            'NH3': f"{dado.nh3_ppm:.1f}",
             'disp': dado.dispositivo_id,
             'id': dado.id
         } for dado in leituras
@@ -123,3 +124,59 @@ def mostrar_dados(request):
         'total_registros': DadosSensor_mq135.objects.count(),
     }
     return render(request, 'wifi/dados.html', context)
+
+
+# Mostrar relatório
+def mostrar_relatorio(request):
+    relatorio = gerar_relatorio()
+    context = {'relatorio': relatorio}
+    return render(request, 'mq135/relatorio.html', context)
+
+
+# API para previsões ML
+@csrf_exempt
+def previsoes_ml(request):
+    try:
+        todas_leituras = DadosSensor_mq135.objects.all().order_by('timestamp')
+        if todas_leituras.count() < 6:
+            return JsonResponse({'status': 'erro', 'mensagem': 'Dados insuficientes'}, status=400)
+        
+        df = pd.DataFrame.from_records(todas_leituras.values('timestamp', 'nh3_ppm'))
+        df['timestamp'] = pd.to_datetime(df['timestamp'])
+        df = df.sort_values('timestamp')
+        
+        # Pegar últimos 30 pontos reais
+        dados_recentes = df.tail(30)
+        
+        # Criar modelo ML para previsão de curto prazo
+        if len(dados_recentes) >= 5:
+            X = np.arange(len(dados_recentes)).reshape(-1, 1)
+            y = dados_recentes['nh3_ppm'].values
+            
+            modelo = linear_model.LinearRegression()
+            modelo.fit(X, y)
+            
+            # Prever próximos 5 pontos
+            proximos_indices = np.arange(len(dados_recentes), len(dados_recentes) + 5).reshape(-1, 1)
+            previsoes = modelo.predict(proximos_indices)
+            
+            # Criar timestamps futuros
+            ultimo_timestamp = dados_recentes['timestamp'].iloc[-1]
+            previsoes_data = []
+            
+            for i, previsao in enumerate(previsoes):
+                novo_timestamp = ultimo_timestamp + pd.Timedelta(seconds=(i+1)*5)
+                previsoes_data.append({
+                    'timestamp': novo_timestamp.isoformat(),
+                    'previsao': float(previsao)
+                })
+            
+            return JsonResponse({
+                'status': 'ok',
+                'previsoes': previsoes_data
+            })
+        else:
+            return JsonResponse({'status': 'erro', 'mensagem': 'Dados insuficientes para ML'}, status=400)
+            
+    except Exception as e:
+        return JsonResponse({'status': 'erro', 'mensagem': str(e)}, status=500)

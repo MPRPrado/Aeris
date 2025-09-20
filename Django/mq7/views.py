@@ -6,7 +6,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from sklearn import linear_model
-from .models import DadosSensor_mq2
+from .models import DadosSensor_mq7
 from .utils import gerar_relatorio
 
 # Receber dados do sensor MQ-2
@@ -60,13 +60,13 @@ def prever_dados_mensal(request, contador):
         return JsonResponse({'status': 'ok', 'mensagem': 'Previsão mensal já concluída'}, status=200)
 
     # Buscar todas as leituras
-    leituras = DadosSensor_mq2.objects.all().order_by('timestamp')
+    leituras = DadosSensor_mq7.objects.all().order_by('timestamp')
 
     if leituras.count() < 6:
         return JsonResponse({'status': 'erro', 'mensagem': 'Leituras insuficientes para previsão.'}, status=400)
 
     # Converter queryset para DataFrame
-    df = pd.DataFrame.from_records(leituras.values('timestamp', 'c4h10_ppm'))
+    df = pd.DataFrame.from_records(leituras.values('timestamp', 'co_ppm'))
     df['timestamp'] = pd.to_datetime(df['timestamp'])
     df = df.sort_values('timestamp')
 
@@ -74,11 +74,11 @@ def prever_dados_mensal(request, contador):
     df['dia'] = (np.arange(len(df)) // 6) + 1
 
     # Calcular média PPM por dia
-    df_dias = df.groupby('dia')['c4h10_ppm'].mean().reset_index()
+    df_dias = df.groupby('dia')['co_ppm'].mean().reset_index()
 
     # Regressão linear
     X = df_dias['dia'].values.reshape(-1, 1)
-    y = df_dias['c4h10_ppm'].values.reshape(-1, 1)
+    y = df_dias['co_ppm'].values.reshape(-1, 1)
 
     modelo = linear_model.LinearRegression()
     modelo.fit(X, y)
@@ -99,11 +99,11 @@ def prever_dados_mensal(request, contador):
 
 # Mostrar dados no HTML
 def mostrar_dados(request):
-    leituras = DadosSensor_mq2.objects.all().order_by('-id')[:50]  # últimas 50 leituras
+    leituras = DadosSensor_mq7.objects.all().order_by('-id')[:50]  # últimas 50 leituras
 
     dados_formatados = [
         {
-            'butano': f"{dado.c4h10_ppm:.1f}",  # corrigido
+            'co': f"{dado.co_ppm:.1f}",  # Monóxido de carbono (CO)
             'disp': dado.dispositivo_id,
             'id': dado.id
         } for dado in leituras
@@ -111,27 +111,27 @@ def mostrar_dados(request):
 
     context = {
         'dados': dados_formatados,
-        'total_registros': DadosSensor_mq2.objects.count(),
+        'total_registros': DadosSensor_mq7.objects.count(),
     }
-    return render(request, 'mq2/dadosmq2.html', context)
+    return render(request, 'mq7/dadosmq7.html', context)
 
 
 # Mostrar relatório
 def mostrar_relatorio(request):
     relatorio = gerar_relatorio()
     context = {'relatorio': relatorio}
-    return render(request, 'mq2/relatorio.html', context)
+    return render(request, 'mq7/relatorio.html', context)
 
 
 # API para previsões ML
 @csrf_exempt
 def previsoes_ml(request):
     try:
-        todas_leituras = DadosSensor_mq2.objects.all().order_by('timestamp')
+        todas_leituras = DadosSensor_mq7.objects.all().order_by('timestamp')
         if todas_leituras.count() < 6:
             return JsonResponse({'status': 'erro', 'mensagem': 'Dados insuficientes'}, status=400)
         
-        df = pd.DataFrame.from_records(todas_leituras.values('timestamp', 'c4h10_ppm'))
+        df = pd.DataFrame.from_records(todas_leituras.values('timestamp', 'co_ppm'))
         df['timestamp'] = pd.to_datetime(df['timestamp'])
         df = df.sort_values('timestamp')
         
@@ -139,7 +139,7 @@ def previsoes_ml(request):
         
         if len(dados_recentes) >= 5:
             X = np.arange(len(dados_recentes)).reshape(-1, 1)
-            y = dados_recentes['c4h10_ppm'].values
+            y = dados_recentes['co_ppm'].values
             
             modelo = linear_model.LinearRegression()
             modelo.fit(X, y)

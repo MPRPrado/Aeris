@@ -3,6 +3,8 @@ from django.urls import path, include
 from app_cad_usuario import views as usuario_views
 from mq135 import views as mq135_views
 from mq2 import views as mq2_views
+from mq7 import views as mq7_views
+
 
 
 urlpatterns = [
@@ -14,10 +16,20 @@ urlpatterns = [
     path('api/', include('app_cad_usuario.Conexao_react.urls')),
 
     # MQ135
-    path('mq135/', mq135_views.mostrar_dados, name='mostrar_dados_mq135'), 
+    path('mq135/', mq135_views.mostrar_dados, name='mostrar_dados_mq135'),
+    path('mq135/relatorio/', mq135_views.mostrar_relatorio, name='relatorio_mq135'),
+    path('mq135/previsoes/', mq135_views.previsoes_ml, name='previsoes_mq135'), 
     path('mq135/prever/<int:contador>/', mq135_views.prever_dados_mensal, name='prever_dados'),
 
     # MQ2
     path('mq2/', mq2_views.mostrar_dados, name='mostrar_dados_mq2'),
+    path('mq2/relatorio/', mq2_views.mostrar_relatorio, name='relatorio_mq2'),
+    path('mq2/previsoes/', mq2_views.previsoes_ml, name='previsoes_mq2'),
     path('mq2/prever/<int:contador>/', mq2_views.prever_dados_mensal, name='prever_dados_mq2'),
+    
+    # MQ7
+    path('mq7/', mq7_views.mostrar_dados, name='mostrar_dados_mq7'),
+    path('mq7/relatorio/', mq7_views.mostrar_relatorio, name='relatorio_mq7'),
+    path('mq7/previsoes/', mq7_views.previsoes_ml, name='previsoes_mq7'),
+    path('mq7/prever/<int:contador>/', mq7_views.prever_dados_mensal, name='prever_dados_mq7'),
 ]

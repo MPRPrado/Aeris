@@ -72,20 +72,36 @@ function Graficos01() {
         // Pegar os últimos 30 registros para dados reais
         const dadosRecentes = dadosFormatados.slice(-30);
 
-        // Adicionar previsões para os próximos 5 pontos
-        const ultimoValor = dadosRecentes[dadosRecentes.length - 1].valor;
-        const tendencia = (dadosRecentes[dadosRecentes.length - 1].valor - dadosRecentes[0].valor) / dadosRecentes.length;
-
-        for (let i = 1; i <= 5; i++) {
-          const ultimaData = new Date(dadosRecentes[dadosRecentes.length - 1].timestamp);
-          const novaData = new Date(ultimaData.getTime() + i * 5000); // 5 segundos de intervalo
-
-          dadosRecentes.push({
-            nome: novaData.toLocaleTimeString(),
-            valor: null, // valor real é null para pontos futuros
-            previsao: ultimoValor + tendencia * i,
-            timestamp: novaData.toISOString()
-          });
+        // Buscar previsões do Django ML
+        try {
+          const previsaoResponse = await axios.get('http://localhost:8000/mq2/previsoes/');
+          if (previsaoResponse.data.status === 'ok') {
+            previsaoResponse.data.previsoes.forEach(prev => {
+              dadosRecentes.push({
+                nome: new Date(prev.timestamp).toLocaleTimeString(),
+                valor: null,
+                previsao: prev.previsao,
+                timestamp: prev.timestamp
+              });
+            });
+          }
+        } catch (error) {
+          console.error('Erro ao buscar previsões ML:', error);
+          // Fallback para cálculo simples se ML falhar
+          const ultimoValor = dadosRecentes[dadosRecentes.length - 1].valor;
+          const tendencia = (dadosRecentes[dadosRecentes.length - 1].valor - dadosRecentes[0].valor) / dadosRecentes.length;
+          
+          for (let i = 1; i <= 5; i++) {
+            const ultimaData = new Date(dadosRecentes[dadosRecentes.length - 1].timestamp);
+            const novaData = new Date(ultimaData.getTime() + i * 5000);
+            
+            dadosRecentes.push({
+              nome: novaData.toLocaleTimeString(),
+              valor: null,
+              previsao: ultimoValor + tendencia * i,
+              timestamp: novaData.toISOString()
+            });
+          }
         }
 
         setDados(dadosRecentes);

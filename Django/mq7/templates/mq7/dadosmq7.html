@@ -1,0 +1,78 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Leituras do Sensor MQ7</title>
+    <meta http-equiv="refresh" content="5"> <!-- Atualiza a cada 5 segundos -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .total {
+            margin: 20px 0;
+            font-size: 18px;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #ddd;
+        }
+    </style>
+</head>
+<body class="bg-light">
+
+<div class="container mt-4">
+    <h1 class="mb-3 text-center">Leituras do Sensor MQ7 - Monóxido de Carbono (CO)</h1>
+    <div class="total">
+        <strong>Total de Registros:</strong> {{ total_registros }}
+    </div>
+    
+    <table class="table table-striped table-hover table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>CO (ppm)</th>
+                <th>Data/Hora</th>
+                <th>Dispositivo</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for dado in dados %}
+            <tr>
+                <td>{{ dado.id }}</td>
+                <td>{{ dado.co }}</td>
+                <td>{{ dado.timestamp }}</td>
+                <td>{{ dado.disp }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" class="text-center">Nenhum dado disponível</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <script>
+        // Atualização via JavaScript (alternativa ao meta refresh)
+        setTimeout(function() {
+            window.location.reload();
+        }, 5000);
+    </script>
+</div>
+
+</body>
+</html>

@@ -7,8 +7,10 @@ from rest_framework.response import Response
 from rest_framework import status
 from mq135.models import DadosSensor_mq135
 from mq2.models import DadosSensor_mq2
+from mq7.models import DadosSensor_mq7
 from .serializer import MQ2Serializer
 from .serializer import MQ135Serializer
+from .serializer import MQ7Serializer
 
 class UsuarioViewSet(viewsets.ModelViewSet):
     queryset = Usuario.objects.all()
@@ -46,4 +48,8 @@ class MQ2ViewSet(viewsets.ModelViewSet):
 class MQ135ViewSet(viewsets.ModelViewSet):
     queryset = DadosSensor_mq135.objects.all().order_by('-timestamp')
     serializer_class = MQ135Serializer
+    
+class MQ7ViewSet(viewsets.ModelViewSet):
+    queryset = DadosSensor_mq7.objects.all().order_by('-timestamp')
+    serializer_class = MQ7Serializer
 

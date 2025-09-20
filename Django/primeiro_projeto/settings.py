@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-^3s^$n9f@)vsuy1q=52v)__d^1$1-#%8d-m+!ap(m51ehh*z5f
 DEBUG = True
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
-ALLOWED_HOSTS = ['192.168.137.67', 'localhost', '127.0.0.1', 'meusite.com']
+ALLOWED_HOSTS = ['192.168.137.67', 'localhost', '127.0.0.1', 'meusite.com', '192.168.0.107',]
 
 
 
@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'app_cad_usuario.Conexao_react',
     'mqtt',
+    'mq7',
 ]
 
 MIDDLEWARE = [

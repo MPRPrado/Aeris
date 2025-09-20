@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Relatório MQ2</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .relatorio { background: #f5f5f5; padding: 20px; border-radius: 8px; }
+        .erro { color: red; }
+        .sucesso { color: green; }
+    </style>
+</head>
+<body>
+    <h1>📊 Relatório do Sensor MQ2 - Butano</h1>
+    
+    <div class="relatorio">
+        {% if relatorio.erro %}
+            <p class="erro">❌ {{ relatorio.erro }}</p>
+        {% elif relatorio == "Sem dados suficientes." %}
+            <p class="erro">❌ {{ relatorio }}</p>
+        {% else %}
+            <div class="sucesso">
+                <h3>Relatório:</h3>
+                <p>{{ relatorio.relatorio }}</p>
+                
+                <h3>Previsões:</h3>
+                <p>{{ relatorio.previsoes }}</p>
+            </div>
+        {% endif %}
+    </div>
+    
+    <a href="{% url 'mostrar_dados_mq2' %}">← Voltar para Dados</a>
+</body>
+</html>
