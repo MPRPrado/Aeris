@@ -23,11 +23,14 @@ def on_message(client, userdata, msg):
 
         if msg.topic == "sensores/mq135":
             # Conversão Rs → ppm (NH3)
-            R0 = 415949.1
+            R0 = 148553.2
             ratio = Rs / R0
-            A_NH3 = 0.75 
-            B_NH3 = -0.34
-            ppm = pow((ratio)/A_NH3, 1/B_NH3)
+            A_NH3 = 7.4482 
+            B_NH3 = -0.4382
+            if ratio >= 1.0:
+                ppm = 0.0
+            else:
+                ppm = (ratio / A_NH3) ** (1 / B_NH3)
 
             DadosSensor_mq135.objects.create(
                 nh3_ppm=ppm,
@@ -36,9 +39,9 @@ def on_message(client, userdata, msg):
             print(f"MQ135 salvo no banco: {ppm:.2f} ppm NH3")
 
         elif msg.topic == "sensores/mq2":
-            R0 = 32830.0
-            A_BUTANO = 97.0
-            B_BUTANO = -0.46
+            R0 = 207974.5
+            A_BUTANO = 37.84 
+            B_BUTANO = -0.434
 
             ratio = Rs / R0
             ppm_mq2 = A_BUTANO * math.pow(ratio, B_BUTANO)
@@ -51,9 +54,11 @@ def on_message(client, userdata, msg):
         elif msg.topic == "sensores/mq7":
             R0 = 22269.50
             ratio = Rs / R0
+            A_CO = 13.08
+            B_CO = -0.895
 
             # Fórmula para o MQ-7 (CO)
-            ppm_mq7 = math.pow(22.07 / ratio, 1.0 / 0.667)
+            ppm_mq7 = A_CO * math.pow(ratio, B_CO)
 
             DadosSensor_mq7.objects.create(
             co_ppm=ppm_mq7,

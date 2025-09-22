@@ -8,10 +8,13 @@ function CriarConta() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [mostrarSenha, setMostrarSenha] = useState(false);
+  const [erro, setErro] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErro('');
+    
     try {
       const response = await axios.post('http://127.0.0.1:8000/api/usuarios/', {
         nome,
@@ -21,8 +24,11 @@ function CriarConta() {
       console.log('Usuário criado:', response.data);
       navigate('/TelaPrincipal');
     } catch (error) {
-      console.error('Erro ao criar usuário:', error);
-      alert('Erro ao criar conta. Tente novamente.');
+      if (error.response?.status === 400) {
+        setErro('Este e-mail já está cadastrado ou dados inválidos.');
+      } else {
+        setErro('Erro ao criar conta. Tente novamente.');
+      }
     }
   };
 
@@ -38,6 +44,12 @@ function CriarConta() {
         <p className="sub-frase shiny-text">Inscreva-se em nossa plataforma!</p>
       </div>
 
+      {erro && (
+        <div style={{ color: 'red', textAlign: 'center', marginBottom: '1em' }}>
+          {erro}
+        </div>
+      )}
+      
       <form className="form-container" onSubmit={handleSubmit}>
         <p className="texto-acima">Nome Completo:</p>
         <div className="input-wrapper">
@@ -89,6 +101,10 @@ function CriarConta() {
 
       <button className="botao-link" type="button" onClick={() => navigate('/login')}>
         Já tem uma conta? Clique aqui para fazer login!
+      </button>
+      
+      <button className="botao-link" type="button" onClick={() => navigate('/')} style={{marginTop: '1rem'}}>
+        Voltar à página inicial
       </button>
     </div>
   );

@@ -45,55 +45,17 @@ def gerar_relatorio():
         else:
             aumento_segunda_semana = variacao_4_semanas
         
-        # Calcular previsão usando Machine Learning
-        try:
-            # Usar todas as leituras para ML
-            todas_leituras = DadosSensor.objects.all().order_by('timestamp')
-            if todas_leituras.count() >= 6:
-                df = pd.DataFrame.from_records(todas_leituras.values('timestamp', 'nh3_ppm'))
-                df['timestamp'] = pd.to_datetime(df['timestamp'])
-                df = df.sort_values('timestamp')
-                df['dia'] = (np.arange(len(df)) // 6) + 1
-                df_dias = df.groupby('dia')['nh3_ppm'].mean().reset_index()
-                
-                if len(df_dias) >= 2:
-                    X = df_dias['dia'].values.reshape(-1, 1)
-                    y = df_dias['nh3_ppm'].values.reshape(-1, 1)
-                    modelo = linear_model.LinearRegression()
-                    modelo.fit(X, y)
-                    
-                    # Prever próximos 14 dias
-                    proximo_dia = df_dias['dia'].max() + 1
-                    dias_futuros = np.arange(proximo_dia, proximo_dia + 14).reshape(-1, 1)
-                    previsoes_ml = modelo.predict(dias_futuros)
-                    
-                    # Calcular variação média das previsões
-                    variacao_ml = abs(np.mean(previsoes_ml) - df_dias['nh3_ppm'].iloc[-1]) / df_dias['nh3_ppm'].iloc[-1] * 100
-                    previsao_min = max(variacao_ml * 0.7, 3)
-                    previsao_max = max(variacao_ml * 1.3, 8)
-                else:
-                    # Fallback para cálculo simples
-                    tendencia = (variacao_4_semanas + variacao_inicio_mes) / 2
-                    previsao_min = max(tendencia * 0.6, 3)
-                    previsao_max = max(tendencia * 1.4, 8)
-            else:
-                # Fallback para cálculo simples
-                tendencia = (variacao_4_semanas + variacao_inicio_mes) / 2
-                previsao_min = max(tendencia * 0.6, 3)
-                previsao_max = max(tendencia * 1.4, 8)
-        except Exception:
-            # Fallback em caso de erro
-            tendencia = (variacao_4_semanas + variacao_inicio_mes) / 2
-            previsao_min = max(tendencia * 0.6, 3)
-            previsao_max = max(tendencia * 1.4, 8)
-        
-        relatorio_texto = f"""Nas últimas semanas, os dados coletados pelo sensor registraram uma queda de {variacao_4_semanas:.0f}% na emissão de gases em comparação com a média das quatro semanas anteriores. Em relação ao início do mês, a redução foi ainda mais expressiva, chegando a {variacao_inicio_mes:.0f}%, indicando uma possível melhora nas condições ambientais da região monitorada. Até a segunda semana do mês, os níveis de emissão haviam apresentado um aumento acumulado de {aumento_segunda_semana:.0f}% em relação ao mês anterior, o que havia gerado alerta para possíveis impactos na qualidade do ar."""
-        
-        previsao_texto = f"""Com base na tendência atual e nos dados históricos, a projeção para as próximas duas semanas indica uma redução adicional entre {previsao_min:.0f}% e {previsao_max:.0f}%, caso as condições se mantenham estáveis. Essa estimativa considera fatores como clima, tráfego e atividade industrial. A continuidade do monitoramento é essencial para confirmar essa trajetória de queda e permitir ações preventivas caso ocorra uma nova oscilação nos níveis de emissão."""
+        # Calcular previsão simples baseada na tendência
+        tendencia = (variacao_4_semanas + variacao_inicio_mes) / 2
+        previsao_min = tendencia * 0.6
+        previsao_max = tendencia * 1.4
         
         return {
-            "relatorio": relatorio_texto,
-            "previsoes": previsao_texto
+            "variacao_4_semanas": int(variacao_4_semanas),
+            "variacao_inicio_mes": int(variacao_inicio_mes),
+            "aumento_segunda_semana": int(aumento_segunda_semana),
+            "previsao_min": int(previsao_min),
+            "previsao_max": int(previsao_max)
         }
         
     except DatabaseError:

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Routes, Route } from 'react-router-dom';
+import LandingPage from './LandingPage';
 import CriarConta from './CriarConta';
 import Login from './Login';
 import TelaPrincipal from './TelaPrincipal';
@@ -34,7 +35,8 @@ function ListaUsuarios() {
 export default function App() {
   return (
     <Routes>
-      <Route path="/" element={<CriarConta />} />
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/criar-conta" element={<CriarConta />} />
       <Route path="/login" element={<Login />} />
       <Route path="/TelaPrincipal" element={<TelaPrincipal />} />
       <Route path="/usuarios" element={<ListaUsuarios />} /> {/* rota para testar API */}

@@ -13,35 +13,37 @@ def usuario(request):
         # Verificação dos campos vazios
         if not all([nome, email, senha]):
             contexto = {
-                'usuarios': Usuario.objects.all(),
-                'error': 'Todos os campos são obrigatórios.'
+                'error': 'Todos os campos são obrigatórios.',
+                'nome': nome,
+                'email': email
             }
-            return render(request, 'usuario/usuario.html', contexto)
+            return render(request, 'usuario/home.html', contexto)
         
-        # Verificação de email existente usando exists()
+        # Verificação de email existente
         if Usuario.objects.filter(email=email).exists():
             contexto = {
-                'usuarios': Usuario.objects.all(),
                 'error': 'Este e-mail já está cadastrado.',
-                'nome': nome  # Manter o nome preenchido no formulário
+                'nome': nome,
+                'email': email
             }
-            return render(request, 'usuario/usuario.html', contexto)
+            return render(request, 'usuario/home.html', contexto)
         
         # Se passou pelas validações, cria o novo usuário
         try:
-            novo_usuario = Usuario.objects.create(
+            novo_usuario = Usuario(
                 nome=nome,
                 email=email,
-                senha=make_password(senha)
+                senha=senha
             )
+            novo_usuario.save()
             return redirect('listagem_usuarios')
         except Exception as e:
             contexto = {
-                'usuarios': Usuario.objects.all(),
-                'error': 'Erro ao criar usuário. Tente novamente.',
-                'nome': nome  # Manter o nome preenchido no formulário
+                'error': f'Erro ao criar usuário: {str(e)}',
+                'nome': nome,
+                'email': email
             }
-            return render(request, 'usuario/usuario.html', contexto)
+            return render(request, 'usuario/home.html', contexto)
     
     # GET request
     contexto = {

@@ -1,8 +1,32 @@
 import './App.css'
 import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 
 function App() {
   const navigate = useNavigate();
+  const [nomeUsuario, setNomeUsuario] = useState('');
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await axios.get('http://127.0.0.1:8000/api/usuarios/');
+        if (response.data && response.data.results && response.data.results.length > 0) {
+          setNomeUsuario(response.data.results[0].nome);
+          localStorage.setItem('usuario', JSON.stringify(response.data.results[0]));
+        }
+      } catch (error) {
+        console.error('Erro ao buscar dados do usuário:', error);
+        const savedUser = localStorage.getItem('usuario');
+        if (savedUser) {
+          const userData = JSON.parse(savedUser);
+          setNomeUsuario(userData.nome);
+        }
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   return (
     <div className="tela-principal-fixa">
@@ -18,12 +42,12 @@ function App() {
       </div>
 
       <div className="frasePequena">
-        Bem-vindo usuário!
+        Bem-vindo {nomeUsuario || 'usuário'}!
       </div>
 
       {/* Usuário no canto direito */}
       <div className="usuarioContainer">
-        <span>Usuário</span>
+        <span>{nomeUsuario}</span>
         <img src="/user (1) 1.png" alt="Ícone Usuário" />
       </div>
 

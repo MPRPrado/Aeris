@@ -86,6 +86,9 @@ def prever_dados_mensal(request, contador):
     # Previsões
     dias_para_prever = np.arange(dia_atual + 1, dias_totais + 1).reshape(-1, 1)
     previsoes = modelo.predict(dias_para_prever).flatten()
+    
+    # Limitar previsões para não serem negativas
+    previsoes = np.maximum(previsoes, 0)
 
     resultado = [{'dia': int(dia), 'previsao_ppm': float(ppm)} for dia, ppm in zip(dias_para_prever.flatten(), previsoes)]
 
@@ -122,47 +125,10 @@ def mostrar_relatorio(request):
     context = {'relatorio': relatorio}
     return render(request, 'mq7/relatorio.html', context)
 
+# API para relatório (JSON)
+def relatorio_api(request):
+    relatorio = gerar_relatorio()
+    return JsonResponse(relatorio)
 
-# API para previsões ML
-@csrf_exempt
-def previsoes_ml(request):
-    try:
-        todas_leituras = DadosSensor_mq7.objects.all().order_by('timestamp')
-        if todas_leituras.count() < 6:
-            return JsonResponse({'status': 'erro', 'mensagem': 'Dados insuficientes'}, status=400)
-        
-        df = pd.DataFrame.from_records(todas_leituras.values('timestamp', 'co_ppm'))
-        df['timestamp'] = pd.to_datetime(df['timestamp'])
-        df = df.sort_values('timestamp')
-        
-        dados_recentes = df.tail(30)
-        
-        if len(dados_recentes) >= 5:
-            X = np.arange(len(dados_recentes)).reshape(-1, 1)
-            y = dados_recentes['co_ppm'].values
-            
-            modelo = linear_model.LinearRegression()
-            modelo.fit(X, y)
-            
-            proximos_indices = np.arange(len(dados_recentes), len(dados_recentes) + 5).reshape(-1, 1)
-            previsoes = modelo.predict(proximos_indices)
-            
-            ultimo_timestamp = dados_recentes['timestamp'].iloc[-1]
-            previsoes_data = []
-            
-            for i, previsao in enumerate(previsoes):
-                novo_timestamp = ultimo_timestamp + pd.Timedelta(seconds=(i+1)*5)
-                previsoes_data.append({
-                    'timestamp': novo_timestamp.isoformat(),
-                    'previsao': float(previsao)
-                })
-            
-            return JsonResponse({
-                'status': 'ok',
-                'previsoes': previsoes_data
-            })
-        else:
-            return JsonResponse({'status': 'erro', 'mensagem': 'Dados insuficientes para ML'}, status=400)
-            
-    except Exception as e:
-        return JsonResponse({'status': 'erro', 'mensagem': str(e)}, status=500)
+
+

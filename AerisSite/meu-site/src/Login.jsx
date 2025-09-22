@@ -88,9 +88,18 @@ export default function Login() {
       <button
         className="botao-link"
         type="button"
-        onClick={() => navigate('/')}
+        onClick={() => navigate('/criar-conta')}
       >
         Não tem uma conta? Clique aqui para fazer cadastro!
+      </button>
+      
+      <button
+        className="botao-link"
+        type="button"
+        onClick={() => navigate('/')}
+        style={{marginTop: '1rem'}}
+      >
+        Voltar à página inicial
       </button>
     </form>
   );

@@ -29,6 +29,8 @@ function Graficos01() {
   const [dados, setDados] = useState(dadosIniciais);
   const [contador, setContador] = useState(0);
   const [nomeUsuario, setNomeUsuario] = useState('');
+  const [relatorio, setRelatorio] = useState('');
+  const [previsoes, setPrevisoes] = useState('');
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -49,6 +51,25 @@ function Graficos01() {
     };
 
     fetchUserData();
+    
+    const buscarRelatorio = async () => {
+      try {
+        const response = await axios.get('http://localhost:8000/mq2/relatorio/');
+        if (response.data) {
+          const { variacao_4_semanas, variacao_inicio_mes, aumento_segunda_semana, previsao_min, previsao_max } = response.data;
+          
+          const relatorioTexto = `Nas últimas semanas, os dados coletados pelo sensor registraram uma queda de ${variacao_4_semanas}% na emissão de gases em comparação com a média das quatro semanas anteriores. Em relação ao início do mês, a redução foi ainda mais expressiva, chegando a ${variacao_inicio_mes}%, indicando uma possível melhora nas condições ambientais da região monitorada. Até a segunda semana do mês, os níveis de emissão haviam apresentado um aumento acumulado de ${aumento_segunda_semana}% em relação ao mês anterior, o que havia gerado alerta para possíveis impactos na qualidade do ar.`;
+          
+          const previsaoTexto = `Com base na tendência atual e nos dados históricos, a projeção para as próximas duas semanas indica uma redução adicional entre ${previsao_min}% e ${previsao_max}%, caso as condições se mantenham estáveis. Essa estimativa considera fatores como clima, tráfego e atividade industrial. A continuidade do monitoramento é essencial para confirmar essa trajetória de queda e permitir ações preventivas caso ocorra uma nova oscilação nos níveis de emissão.`;
+          
+          setRelatorio(relatorioTexto);
+          setPrevisoes(previsaoTexto);
+        }
+      } catch (error) {
+        console.error('Erro ao buscar relatório:', error);
+      }
+    };
+    
     const buscarDados = async () => {
       try {
         const response = await axios.get('http://localhost:8000/api/mq2/');
@@ -57,63 +78,77 @@ function Graficos01() {
           return;
         }
 
-        const dadosFormatados = response.data.results.map((item) => ({
-          nome: new Date(item.timestamp).toLocaleTimeString(),
+        const dadosFormatados = response.data.results.map((item, index) => ({
+          nome: `Leitura ${index + 1}`,
           valor: parseFloat(item.c4h10_ppm),
-          timestamp: item.timestamp,
-          previsao: null // inicialmente null para todos os pontos
+          timestamp: item.timestamp
         }));
 
-        // Ordenar por timestamp
-        dadosFormatados.sort((a, b) => 
-          new Date(a.timestamp) - new Date(b.timestamp)
-        );
+        // Calcular média por dia (6 leituras = 1 dia)
+        const dadosPorDia = [];
+        for (let i = 0; i < dadosFormatados.length; i += 6) {
+          const leiturasDoDia = dadosFormatados.slice(i, i + 6);
+          const mediaValor = leiturasDoDia.reduce((acc, curr) => acc + curr.valor, 0) / leiturasDoDia.length;
+          const dia = Math.floor(i / 6) + 1;
+          dadosPorDia.push({
+            nome: `Dia ${dia}`,
+            valor: mediaValor,
+            previsao: null
+          });
+        }
 
-        // Pegar os últimos 30 registros para dados reais
-        const dadosRecentes = dadosFormatados.slice(-30);
-
-        // Buscar previsões do Django ML
-        try {
-          const previsaoResponse = await axios.get('http://localhost:8000/mq2/previsoes/');
-          if (previsaoResponse.data.status === 'ok') {
-            previsaoResponse.data.previsoes.forEach(prev => {
-              dadosRecentes.push({
-                nome: new Date(prev.timestamp).toLocaleTimeString(),
-                valor: null,
-                previsao: prev.previsao,
-                timestamp: prev.timestamp
-              });
-            });
-          }
-        } catch (error) {
-          console.error('Erro ao buscar previsões ML:', error);
-          // Fallback para cálculo simples se ML falhar
-          const ultimoValor = dadosRecentes[dadosRecentes.length - 1].valor;
-          const tendencia = (dadosRecentes[dadosRecentes.length - 1].valor - dadosRecentes[0].valor) / dadosRecentes.length;
-          
-          for (let i = 1; i <= 5; i++) {
-            const ultimaData = new Date(dadosRecentes[dadosRecentes.length - 1].timestamp);
-            const novaData = new Date(ultimaData.getTime() + i * 5000);
-            
-            dadosRecentes.push({
-              nome: novaData.toLocaleTimeString(),
+        // Criar array completo de 30 dias
+        const dadosCompletos = [];
+        for (let dia = 1; dia <= 30; dia++) {
+          const dadoExistente = dadosPorDia.find(d => d.nome === `Dia ${dia}`);
+          if (dadoExistente) {
+            dadosCompletos.push(dadoExistente);
+          } else {
+            dadosCompletos.push({
+              nome: `Dia ${dia}`,
               valor: null,
-              previsao: ultimoValor + tendencia * i,
-              timestamp: novaData.toISOString()
+              previsao: null
             });
           }
         }
 
-        setDados(dadosRecentes);
-        setContador(response.data.count);
+        // Buscar previsões se tivermos dados suficientes
+        if (dadosPorDia.length >= 10) {
+          try {
+            const totalLeituras = dadosFormatados.length;
+            const previsaoResponse = await axios.get(`http://localhost:8000/mq2/prever/${totalLeituras}/`);
+            if (previsaoResponse.data.previsoes) {
+              previsaoResponse.data.previsoes.forEach(previsao => {
+                const index = previsao.dia - 1;
+                if (index < 30) {
+                  dadosCompletos[index].previsao = previsao.previsao_ppm;
+                  // Conectar previsão com último valor real
+                  if (index > 0 && dadosCompletos[index - 1].valor !== null && dadosCompletos[index].valor === null) {
+                    dadosCompletos[index].valor = dadosCompletos[index - 1].valor;
+                  }
+                }
+              });
+            }
+          } catch (erroPrevisao) {
+            console.error('Erro ao buscar previsões:', erroPrevisao);
+          }
+        }
+
+        setDados(dadosCompletos);
+        setContador(dadosFormatados.length);
       } catch (error) {
         console.error('Erro ao buscar dados:', error);
       }
     };
 
     buscarDados();
+    buscarRelatorio();
     const intervalo = setInterval(buscarDados, 5000);
-    return () => clearInterval(intervalo);
+    const intervaloRelatorio = setInterval(buscarRelatorio, 30000);
+    return () => {
+      clearInterval(intervalo);
+      clearInterval(intervaloRelatorio);
+    };
   }, []);
 
   return (
@@ -163,15 +198,15 @@ function Graficos01() {
                   if (value === null) return ['N/A'];
                   return [`${value.toFixed(2)} ppm`, name === 'previsao' ? 'Previsão' : 'Concentração'];
                 }}
-                labelFormatter={(label) => `Hora: ${label}`}
+                labelFormatter={(label) => label}
               />
-              <Legend />
+              <Legend wrapperStyle={{ top: 450, left: 0 }} />
               <Line
                 type="monotone"
                 dataKey="valor"
                 stroke="#ffac75"
                 strokeWidth={2}
-                name="C4H10 PPM"
+                name="C4H10"
                 dot={false}
                 activeDot={{ r: 8 }}
               />
@@ -200,13 +235,13 @@ function Graficos01() {
               Relatórios:
             </div>
             <div className="frase-relatorio-menor">
-              Nas últimas semanas, os dados coletados pelo sensor registraram uma queda de 23% na emissão de gases em comparação com a média das quatro semanas anteriores. Em relação ao início do mês, a redução foi ainda mais expressiva, chegando a 31%, indicando uma possível melhora nas condições ambientais da região monitorada. Até a segunda semana do mês, os níveis de emissão haviam apresentado um aumento acumulado de 15% em relação ao mês anterior, o que havia gerado alerta para possíveis impactos na qualidade do ar.
+              {relatorio || 'Carregando relatório...'}
             </div>
             <div className="frase-relatorio" style={{ marginTop: "28px" }}>
               Previsões:
             </div>
             <div className="frase-previsao-menor">
-              Com base na tendência atual e nos dados históricos, a projeção para as próximas duas semanas indica uma redução adicional entre 8% e 12%, caso as condições se mantenham estáveis. Essa estimativa considera fatores como clima, tráfego e atividade industrial. A continuidade do monitoramento é essencial para confirmar essa trajetória de queda e permitir ações preventivas caso ocorra uma nova oscilação nos níveis de emissão.
+              {previsoes || 'Carregando previsões...'}
             </div>
           </div>
         </div>
