@@ -183,13 +183,6 @@ npm start
 - **Código Aberto**: Disponível para a comunidade
 - **Educacional**: Ferramenta de aprendizado para outros estudantes
 
-## 📞 Contato
-
-**Projeto desenvolvido para a Feira de Tecnologias 2025**
-**ETE "FMC" - Escola Técnica Estadual**
-
----
-
 *"O AERIS é o primeiro passo. E não será o último."*
 
 **#TecnologiaParaOBem #EcologiaIntegral #InovaçãoSustentável**
