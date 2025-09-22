@@ -58,7 +58,7 @@ function Graficos01() {
         }
 
         const dadosFormatados = response.data.results.map((item) => ({
-          nome: new Date(item.timestamp).toLocaleTimeString(),
+          nome: new Date(item.timestamp).toLocaleDateString(),
           valor: parseFloat(item.c4h10_ppm),
           timestamp: item.timestamp,
           previsao: null // inicialmente null para todos os pontos
@@ -104,7 +104,7 @@ function Graficos01() {
     <div className="pagina-sensor">
       <div className="topo-sensor">
         {/* Logo */}
-        <div className="logoErisPequena">
+        <div className="logoErisPequena" style={{ marginLeft: '-6em' }}>
           <img
             src="/AerisLOGOsemBG 2.png"
             className="logo-img-pequena"
@@ -115,7 +115,7 @@ function Graficos01() {
           </span>
         </div>
         {/* Usuário - Modificação aqui */}
-        <div className="usuarioContainer">
+        <div className="usuarioContainer" style={{  position: 'absolute', right: '50px', top: '20px' }}>
           <span>{nomeUsuario}</span>
           <img src="/user (1) 1.png" alt="Ícone Usuário" />
         </div>
@@ -129,11 +129,11 @@ function Graficos01() {
           </div>
           {/* Gráfico abaixo da frase */}
           <div style={{ width: "100%", display: "flex", justifyContent: "center", marginTop: "50px" }}>
-            <LineChart width={700} height={430} data={dados}>
+            <LineChart width={850} height={450} data={dados}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis 
                 dataKey="nome" 
-                angle={-45} 
+                angle={-20} 
                 textAnchor="end" 
                 dy={10}
                 interval={Math.ceil(dados.length / 10)} // Mostrar apenas 10 labels no eixo X
@@ -149,8 +149,16 @@ function Graficos01() {
                 }}
                 labelFormatter={(label) => `Hora: ${label}`}
               />
-              <Legend />
-              <Line
+              <Legend 
+               layout="horizontal"
+               verticalAlign="bottom"  // força a legenda lá embaixo
+               align="center"          // centraliza
+               wrapperStyle={{
+                fontSize: 20,    
+                paddingTop: 30        // dá o espaço extra pra “descer” mais
+             }}
+              />
+              <Line 
                 type="monotone"
                 dataKey="valor"
                 stroke="#ffac75"
@@ -194,18 +202,6 @@ function Graficos01() {
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Frase/botão para voltar à página inicial */}
-      <div className="voltar-inicio-container">
-        <span
-          className="voltar-inicio-link"
-          onClick={() => navigate("/TelaPrincipal")}
-          tabIndex={0}
-          role="button"
-        >
-          Voltar para a página inicial
-        </span>
       </div>
     </div>
   );

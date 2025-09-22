@@ -29,7 +29,7 @@ function CriarConta() {
   return (
     <div id="root">
       <div style={{ alignSelf: 'center' }}>
-        <h1 className="logoEris">
+        <h1 className="logoEris" style={{ marginTop: '0em', marginLeft: '45px' }}>
           <img src="/AerisLOGOsemBG 2.png" className="logo-img" />
           <span className="logo-eris-palavra">
             <span className="upside-down-v">V</span>eris

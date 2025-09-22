@@ -28,14 +28,14 @@ export default function Login() {
   return (
     <form id="root" onSubmit={handleSubmit}>
       <div style={{ alignSelf: 'center' }}>
-        <h1 className="logoEris">
+        <h1 className="logoEris" style={{ marginTop: '-0.5em', marginLeft: '0.99em' }}>
           <img src="/AerisLOGOsemBG 2.png" className="logo-img" alt="Logo" />
           <span className="logo-eris-palavra">
             <span className="upside-down-v">V</span>eris
           </span>
         </h1>
-        <p className="sub-frase">Bem-vindo de volta a nossa plataforma!</p>
-        <p className="sub-sub-frase">Entre na sua conta para continuar</p>
+        <p className="sub-frase" >Bem-vindo de volta a nossa plataforma!</p>
+        <p className="sub-sub-frase" style={{ fontSize: '1.5em' }}>Entre na sua conta para continuar </p>
       </div>
 
       {/* Primeira caixa de texto, um pouco abaixo */}

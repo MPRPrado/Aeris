@@ -1,28 +1,34 @@
 body {
   background: #fff;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
 }
 
 #root {
   background: #fff;
-  max-width: 1280px;
-  margin: 0 auto;
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
   padding: 2rem;
   text-align: center;
+  box-sizing: border-box;
 
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start; /* topo */
-  min-height: 100vh;
+  justify-content: center;
+  overflow: hidden;
 }
 
 .logoEris {
-  font-size: 4em;
+  font-size: 6em;
   display: flex;
   align-items: center;
   justify-content: flex-start;
   gap: 0.05em; /* Diminua o gap para aproximar a imagem do texto */
-  margin-left: 50px; /* empurra tudo para a direita */
+  margin-left: 60px; /* empurra tudo para a direita */
+  margin-top: 0px;
 }
 
 
@@ -52,14 +58,14 @@ body {
 }
 
 .sub-frase {
-  font-size: 1.5em;
-  margin-top: 0; /* Totalmente próximo da logo */
+  font-size: 2.2em;
+  margin-top: -30px; /* Totalmente próximo da logo */
   color: #000;
 }
 
 .sub-sub-frase {
-  font-size: 1em;
-  margin-top: -2em; /* Totalmente próximo da logo */
+  font-size: 3em;
+  margin-top: -1.5em; /* Totalmente próximo da logo */
   color: #8a8a8a;
 }
 
@@ -71,24 +77,24 @@ body {
 }
 
 .input-icon {
-  width: 1.3em;
-  height: 1.3em;
+  width: 2.1em;
+  height: 2.1em;
   margin-right: 0.5em;
   opacity: 0.7;
   position: absolute;
-  left: 18px;
+  left: 24px;
   top: 50%;
   transform: translateY(-50%);
   z-index: 2;
 }
 
 .input-Escrita {
-  font-size: 1em;
-  padding: 0.5em 1em 0.5em 3em; /* padding-left maior para o ícone */
-  padding-top: 1em;
-  padding-bottom: 1em;
+  font-size: 1.4em;
+  padding: 0.7em 1.2em 0.7em 3.5em; /* padding-left maior para o ícone */
+  padding-top: 1.2em;
+  padding-bottom: 1.2em;
   margin-top: 0;
-  border: 1px solid #8a8a8a;
+  border: 2px solid #8a8a8a;
   border-radius: 0.5em;
   outline: none;
   color: #8a8a8a;
@@ -100,16 +106,16 @@ body {
 /* Estilo para o botão de mostrar senha */
 .mostrar-senha {
   position: absolute;
-  right: 10px;
+  right: 15px;
   top: 50%;
   transform: translateY(-50%);
   background: none;
   border: none;
   color: #8a8a8a;
   cursor: pointer;
-  font-size: 0.9em;
-  padding: 5px 10px;
-  border-radius: 4px;
+  font-size: 1.2em;
+  padding: 8px 15px;
+  border-radius: 6px;
   transition: background-color 0.2s;
 }
 
@@ -126,7 +132,7 @@ body {
 }
 
 .input-wrapper .input-Escrita {
-  padding-right: 80px; /* Espaço para o botão */
+  padding-right: 120px; /* Espaço para o botão */
 }
 
 /* Cor do placeholder igual à borda */
@@ -139,14 +145,14 @@ body {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  width: 500px;      /* aumente este valor para deixar mais larga */
+  width: 700px;      /* aumente este valor para deixar mais larga */
   max-width: 100%;
-  margin-top: 0;
+  margin-top: 1.5em;
 }
 
 .texto-acima {
-  font-size: 1.1em;
-  margin: 0 0 0.2em 0;
+  font-size: 1.6em;
+  margin: 0 0 0.3em 0;
   color: #8a8a8a;
   text-align: left;
   width: 100%;      /* Alinha com a caixa de texto */
@@ -154,13 +160,13 @@ body {
 }
 
 .botao-criar-conta {
-  width: 400px;
-  padding: 0.8em 0;
+  width: 550px;
+  padding: 1.2em 0;
   background: #FC991A;
   color: #fff;
   border: none;
   border-radius: 0.5em;
-  font-size: 1.2em;
+  font-size: 1.6em;
   cursor: pointer;
   margin: 0 auto;
   display: block;
@@ -175,7 +181,7 @@ body {
   background: none;
   border: none;
   color: #FC991A;
-  font-size: 1em;
+  font-size: 1.4em;
   text-decoration: underline;
   cursor: pointer;
   margin-top: 1em;
@@ -222,11 +228,14 @@ body {
   align-items: center;
   justify-content: flex-start;
   padding-bottom: 32px;
+
+  transform: scale(1.1); /* aumenta 10% */
+  transform-origin: top left; /* mantém fixo no canto */
 }
 
 /* Nova logo no canto superior esquerdo */
 .logoErisPequena {
-  font-size: 2em; /* maior que antes */
+  font-size: 4em; /* maior que antes */
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -259,27 +268,27 @@ body {
   transform: rotate(180deg);
   margin-right: -0.08em;
   position: relative;
-  top: 0.05em;
+  top: 0.1em;
   color: #000;
 }
 
 .frasePequena {
   position: fixed;
-  top: 100px;   /* mais abaixo da logo */
+  top: 120px;   /* mais abaixo da logo */
   left: 65px;  /* mais à direita da logo */
-  font-size: 2em;
+  font-size: 3em;
   color: #000000;
   z-index: 999;
 }
 
 .usuarioContainer {
   position: fixed;
-  top: 15px; /* mesma altura da logo */
-  right: 15px;
+  top: 20px; /* mesma altura da logo */
+  right: 200px;
   display: flex;
   align-items: center;
   gap: 0.5em;
-  font-size: 1.5em; /* mesmo tamanho da logo */
+  font-size: 3em;
   color: #000;
   z-index: 1000;
 }
@@ -292,13 +301,13 @@ body {
 
 .fraseSensoresConectados {
   position: fixed;
-  top: 165px;
+  top: 180px;
   left: 65px;
   right: 40px; /* pra linha ir até perto da borda direita */
   display: flex;
   align-items: center;
   gap: 1em;
-  font-size: 1.2em;
+  font-size: 2em;
   color: #000000;
   z-index: 999;
 }
@@ -306,18 +315,18 @@ body {
 /* Linha que vai esticar ao lado do texto */
 .fraseSensoresConectados .linha-horizontal {
   flex-grow: 1;          /* linha ocupa o resto do espaço */
-  height: 1.5px;           /* espessura da linha */
+  height: 2px;           /* espessura da linha */
   background-color: #000000; /* cor da linha igual ao texto */
   border-radius: 1px;
   position: relative;
-  top: 0.1em; /* ajusta verticalmente a linha */
+  top: 0.15em; /* ajusta verticalmente a linha */
 }
 
 .fraseVejaRelatorios {
   position: fixed;
-  top: 190px; /* um pouco abaixo da frase de sensores */
+  top: 220px; /* um pouco abaixo da frase de sensores */
   left: 65px;
-  font-size: 1em;
+  font-size: 1.4em;
   color: #8a8a8a;
   z-index: 999;
 }
@@ -325,12 +334,13 @@ body {
 /* Container vertical que segura os sensores */
 .sensoresContainer {
   position: fixed;  /* mantém no lugar */
-  top: 255px;
+  top: 300px;
   left: 65px;
   display: flex;
   flex-direction: column; /* empilha verticalmente */
-  gap: 40px; /* espaçamento entre sensores */
+  gap: 60px; /* espaçamento entre sensores */
   z-index: 999;
+  font-size: 1.8em;
 }
 
 
@@ -363,6 +373,7 @@ body {
   font-size: 1em;
   color: #000;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .textoCirculo:hover {
@@ -377,22 +388,22 @@ body {
 }
 
 .linhaAbaixoTextoMenor {
-  height: 1px;
+  height: 0.009em;
   background-color: #000000;
-  width: 100%;  /* ok */
+  width: 130%;  /* ok */
   margin-top: 10px;
 }
 
 .mensagemFixa {
   position: fixed;
-  top: 225px;
-  left: 700px;
-  width: 500px;
-  background-color: #ffac75;
-  padding: 20px;
+  top: 270px;
+  left: 35em;
+  width: 800px;
+  background-color: #f9f5f5;
+  padding: 40px;
   border-radius: 8px;
   color: #333;
-  font-size: 1.1em;
+  font-size: 1.5em;
   line-height: 1.5;
   box-shadow: 0 0 10px rgba(0,0,0,0.1);
   z-index: 999;
@@ -400,15 +411,15 @@ body {
 
 .suporteContainer {
   position: fixed;
-  top: 500px; /* Distância do topo da tela */
-  left: 716px; /* Distância da esquerda da tela */
+  top: 630px; /* Distância do topo da tela */
+  left: 64em; /* Distância da esquerda da tela */
   width: 500px; /* Largura do bloco */
   text-align: center;
   z-index: 999;
 }
 
 .textoSuporte {
-  font-size: 16px;
+  font-size: 1.3em;
   margin-bottom: 10px;
   color: #333;
 }
@@ -419,7 +430,7 @@ body {
   border: none;
   padding: 10px 20px;
   border-radius: 8px;
-  font-size: 16px;
+  font-size: 21px;
   cursor: pointer;
   transition: background-color 0.3s;
 }
@@ -437,14 +448,14 @@ body {
   border-radius: 16px;
   box-shadow: 0 4px 24px rgba(0,0,0,0.18);
   padding: 48px 40px;
-  min-width: 800px;
+  min-width: 1100px;
   min-height: 420px;
   display: flex;
   flex-direction: column; /* Adicione esta linha */
   align-items: flex-start; /* Para alinhar à esquerda */
   justify-content: flex-start;
   border: 2.5px solid #e3e3e3;
-  margin-left: -20px; /* ajuste o valor negativo conforme desejar */
+  margin-left: -23em; /* ajuste o valor negativo conforme desejar */
   min-height: 700px;
 }
 
@@ -491,8 +502,8 @@ body {
   border-radius: 16px;
   box-shadow: 0 4px 24px rgba(0,0,0,0.18);
   padding: 48px 24px;
-  min-width: 280px;
-  min-height: 560px;
+  min-width: 670px;
+  min-height: 736px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -517,7 +528,7 @@ body {
 .frase-topo-caixa-maior {
   width: 100%;
   text-align: left;
-  font-size: 1.1em;
+  font-size: 1.5em;
   font-weight: 500;
   color: #333;
   margin-bottom: 12px;
@@ -535,7 +546,7 @@ body {
   align-items: flex-start;  /* ou center, se quiser centralizar */
   gap: 8px;                 /* espaço entre as frases */
   color: #444;
-  font-size: 1em;
+  font-size: 1.5em;
   line-height: 1.6;
 }
 
@@ -555,17 +566,17 @@ body {
 }
 
 .frase-relatorio {
-  font-size: 1.1em;
+  font-size: 2.3em;
   color: #000000;
   text-align: center;
   font-weight: 500;
   line-height: 1.5;
   margin-top: -21px;
-  margin-left: -200px;
+  margin-left: 0px;
 }
 
 .frase-relatorio-menor {
-  font-size: 0.95em;
+  font-size: 1.4em;
   color: #666;
   text-align: center;
   font-weight: 400;
@@ -573,7 +584,7 @@ body {
 }
 
 .frase-previsao-menor {
-  font-size: 0.95em;
+  font-size: 1.4em;
   color: #666;
   text-align: center;
   font-weight: 400;
@@ -588,8 +599,8 @@ body {
   text-decoration: underline;
   transition: color 0.2s;
   outline: none;
-  margin-left: -1000px;;
-  margin-top: 400px;
+  margin-left: 60000px;;
+  margin-top: 6000px;
 }
 .voltar-inicio-link:hover,
 .voltar-inicio-link:focus {

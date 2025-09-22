@@ -104,7 +104,7 @@ function Graficos03() {
     <div className="pagina-sensor">
       <div className="topo-sensor">
         {/* Logo */}
-        <div className="logoErisPequena">
+        <div className="logoErisPequena" style={{ marginLeft: '-6em' }}>
           <img
             src="/AerisLOGOsemBG 2.png"
             className="logo-img-pequena"
@@ -115,7 +115,7 @@ function Graficos03() {
           </span>
         </div>
         {/* Usuário */}
-        <div className="usuarioContainer">
+        <div className="usuarioContainer" style={{  position: 'absolute', right: '50px', top: '20px' }}>
           <span>Usuário</span>
           <img src="/user (1) 1.png" alt="Ícone Usuário" />
         </div>
@@ -134,7 +134,7 @@ function Graficos03() {
               <XAxis dataKey="nome" angle={-45} textAnchor="end" dy={10} />
               <YAxis />
               <Tooltip />
-              <Legend wrapperStyle={{ top: 455 }} />
+              <Legend wrapperStyle={{ top: 455, fontSize:20 }} />
               <Line
                 type="monotone"
                 dataKey="valor"
