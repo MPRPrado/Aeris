@@ -8,29 +8,14 @@ import axios from 'axios';
 // Estado inicial como array vazio
 const dadosIniciais = [];
 
-function DiamondDot(props) {
-  const { cx, cy, stroke, fill, payload } = props;
-  // Só desenha o diamante se houver valor de previsão
-  if (payload.previsao == null) return null;
-  return (
-    <svg x={cx - 6} y={cy - 6} width={12} height={12} viewBox="0 0 12 12">
-      <polygon
-        points="6,0 12,6 6,12 0,6"
-        stroke={stroke}
-        fill={fill || "#fff"}
-        strokeWidth={2}
-      />
-    </svg>
-  );
-}
+
 
 function Graficos01() {
   const navigate = useNavigate();
   const [dados, setDados] = useState(dadosIniciais);
-  const [contador, setContador] = useState(0);
   const [nomeUsuario, setNomeUsuario] = useState('');
   const [relatorio, setRelatorio] = useState('');
-  const [previsoes, setPrevisoes] = useState('');
+  const [filtro, setFiltro] = useState('mensal'); // mensal, semanal, diario
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -56,14 +41,11 @@ function Graficos01() {
       try {
         const response = await axios.get('http://localhost:8000/mq2/relatorio/');
         if (response.data) {
-          const { variacao_4_semanas, variacao_inicio_mes, aumento_segunda_semana, previsao_min, previsao_max } = response.data;
+          const { variacao_4_semanas, variacao_inicio_mes, aumento_segunda_semana} = response.data;
           
           const relatorioTexto = `Nas últimas semanas, os dados coletados pelo sensor registraram uma queda de ${variacao_4_semanas}% na emissão de gases em comparação com a média das quatro semanas anteriores. Em relação ao início do mês, a redução foi ainda mais expressiva, chegando a ${variacao_inicio_mes}%, indicando uma possível melhora nas condições ambientais da região monitorada. Até a segunda semana do mês, os níveis de emissão haviam apresentado um aumento acumulado de ${aumento_segunda_semana}% em relação ao mês anterior, o que havia gerado alerta para possíveis impactos na qualidade do ar.`;
           
-          const previsaoTexto = `Com base na tendência atual e nos dados históricos, a projeção para as próximas duas semanas indica uma redução adicional entre ${previsao_min}% e ${previsao_max}%, caso as condições se mantenham estáveis. Essa estimativa considera fatores como clima, tráfego e atividade industrial. A continuidade do monitoramento é essencial para confirmar essa trajetória de queda e permitir ações preventivas caso ocorra uma nova oscilação nos níveis de emissão.`;
-          
           setRelatorio(relatorioTexto);
-          setPrevisoes(previsaoTexto);
         }
       } catch (error) {
         console.error('Erro ao buscar relatório:', error);
@@ -72,7 +54,8 @@ function Graficos01() {
     
     const buscarDados = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/api/mq2/');
+        // Buscar todos os dados (sem paginação)
+        const response = await axios.get('http://localhost:8000/api/mq2/?page_size=2000');
         if (!response.data || !response.data.results) {
           console.log('Nenhum dado disponível');
           return;
@@ -83,59 +66,55 @@ function Graficos01() {
           valor: parseFloat(item.c4h10_ppm),
           timestamp: item.timestamp
         }));
+        
+        console.log('Total de dados recebidos:', dadosFormatados.length);
+        console.log('Filtro atual:', filtro);
 
-        // Calcular média por dia (6 leituras = 1 dia)
-        const dadosPorDia = [];
-        for (let i = 0; i < dadosFormatados.length; i += 6) {
-          const leiturasDoDia = dadosFormatados.slice(i, i + 6);
-          const mediaValor = leiturasDoDia.reduce((acc, curr) => acc + curr.valor, 0) / leiturasDoDia.length;
-          const dia = Math.floor(i / 6) + 1;
-          dadosPorDia.push({
-            nome: `Dia ${dia}`,
-            valor: mediaValor,
-            previsao: null
-          });
-        }
-
-        // Criar array completo de 30 dias
-        const dadosCompletos = [];
-        for (let dia = 1; dia <= 30; dia++) {
-          const dadoExistente = dadosPorDia.find(d => d.nome === `Dia ${dia}`);
-          if (dadoExistente) {
-            dadosCompletos.push(dadoExistente);
-          } else {
-            dadosCompletos.push({
+        // Processar dados baseado no filtro
+        let dadosProcessados = [];
+        
+        if (filtro === 'diario') {
+          // 6 leituras por dia (a cada 4 horas)
+          dadosProcessados = dadosFormatados.slice(0, 6).map((item, index) => ({
+            nome: `${index * 4}h`,
+            valor: item.valor
+          }));
+        } else if (filtro === 'semanal') {
+          // 7 dias
+          for (let i = 0; i < Math.min(dadosFormatados.length, 42); i += 6) {
+            const leiturasDoDia = dadosFormatados.slice(i, i + 6);
+            const mediaValor = leiturasDoDia.reduce((acc, curr) => acc + curr.valor, 0) / leiturasDoDia.length;
+            const dia = Math.floor(i / 6) + 1;
+            dadosProcessados.push({
               nome: `Dia ${dia}`,
-              valor: null,
-              previsao: null
+              valor: mediaValor
             });
           }
-        }
-
-        // Buscar previsões se tivermos dados suficientes
-        if (dadosPorDia.length >= 10) {
-          try {
-            const totalLeituras = dadosFormatados.length;
-            const previsaoResponse = await axios.get(`http://localhost:8000/mq2/prever/${totalLeituras}/`);
-            if (previsaoResponse.data.previsoes) {
-              previsaoResponse.data.previsoes.forEach(previsao => {
-                const index = previsao.dia - 1;
-                if (index < 30) {
-                  dadosCompletos[index].previsao = previsao.previsao_ppm;
-                  // Conectar previsão com último valor real
-                  if (index > 0 && dadosCompletos[index - 1].valor !== null && dadosCompletos[index].valor === null) {
-                    dadosCompletos[index].valor = dadosCompletos[index - 1].valor;
-                  }
-                }
+        } else {
+          // Mensal - 30 dias (criar array completo mesmo sem dados)
+          for (let dia = 1; dia <= 30; dia++) {
+            const startIndex = (dia - 1) * 6;
+            const leiturasDoDia = dadosFormatados.slice(startIndex, startIndex + 6);
+            
+            if (leiturasDoDia.length > 0) {
+              const mediaValor = leiturasDoDia.reduce((acc, curr) => acc + curr.valor, 0) / leiturasDoDia.length;
+              dadosProcessados.push({
+                nome: `Dia ${dia}`,
+                valor: mediaValor
+              });
+            } else {
+              dadosProcessados.push({
+                nome: `Dia ${dia}`,
+                valor: null
               });
             }
-          } catch (erroPrevisao) {
-            console.error('Erro ao buscar previsões:', erroPrevisao);
           }
         }
-
-        setDados(dadosCompletos);
-        setContador(dadosFormatados.length);
+        
+        console.log('Dados processados:', dadosProcessados.length, 'itens');
+        console.log('Primeiros 5 dados:', dadosProcessados.slice(0, 5));
+        console.log('Últimos 5 dados:', dadosProcessados.slice(-5));
+        setDados(dadosProcessados);
       } catch (error) {
         console.error('Erro ao buscar dados:', error);
       }
@@ -143,13 +122,8 @@ function Graficos01() {
 
     buscarDados();
     buscarRelatorio();
-    const intervalo = setInterval(buscarDados, 5000);
-    const intervaloRelatorio = setInterval(buscarRelatorio, 30000);
-    return () => {
-      clearInterval(intervalo);
-      clearInterval(intervaloRelatorio);
-    };
-  }, []);
+    // Sem atualização automática - dados mensais fixos
+  }, [filtro]); // Recarregar quando filtro mudar
 
   return (
     <div className="pagina-sensor">
@@ -174,31 +148,55 @@ function Graficos01() {
 
       {/* Caixas e conteúdo */}
       <div className="container-duas-caixas-nao-centralizadas">
-        <div className="caixa-central-sensor">
+        <div className="caixa-central-sensor" style={{ position: "relative" }}>
+          {/* Dropdown no cantinho */}
+          <select 
+            value={filtro}
+            onChange={(e) => setFiltro(e.target.value)}
+            style={{
+              position: "absolute",
+              top: "15px",
+              right: "15px",
+              padding: "8px 12px",
+              borderRadius: "6px",
+              border: "2px solid #ffac75",
+              backgroundColor: "white",
+              cursor: "pointer",
+              fontSize: "12px",
+              fontWeight: "500",
+              color: "#333",
+              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+              outline: "none",
+              zIndex: 10
+            }}
+          >
+            <option value="diario">Diário</option>
+            <option value="semanal">Semanal</option>
+            <option value="mensal">Mensal</option>
+          </select>
+          
           <div className="frase-topo-caixa-maior">
-            Sensor MQ2 - Dados de captação: Butano (C4H10)
+            Sensor MQ2 - Dados Mensais: Butano (C4H10)
           </div>
           {/* Gráfico abaixo da frase */}
-          <div style={{ width: "100%", display: "flex", justifyContent: "center", marginTop: "50px" }}>
+          <div style={{ width: "100%", display: "flex", justifyContent: "center", marginTop: "30px" }}>
             <LineChart width={700} height={430} data={dados}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis 
                 dataKey="nome" 
-                angle={-45} 
-                textAnchor="end" 
-                dy={10}
-                interval={Math.ceil(dados.length / 10)} // Mostrar apenas 10 labels no eixo X
+                tick={false}
+                axisLine={true}
               />
               <YAxis 
                 domain={[0, 'auto']}
                 label={{ value: 'PPM', angle: -90, position: 'insideLeft' }}
               />
               <Tooltip 
-                formatter={(value, name) => {
-                  if (value === null) return ['N/A'];
-                  return [`${value.toFixed(2)} ppm`, name === 'previsao' ? 'Previsão' : 'Concentração'];
+                formatter={(value, name, props) => {
+                  if (value === null) return ['N/A', `${props.payload.nome} - Concentração`];
+                  return [`${value.toFixed(2)} ppm`, `${props.payload.nome} - Concentração`];
                 }}
-                labelFormatter={(label) => label}
+                labelFormatter={() => ''}
               />
               <Legend wrapperStyle={{ top: 450, left: 0 }} />
               <Line
@@ -210,15 +208,7 @@ function Graficos01() {
                 dot={false}
                 activeDot={{ r: 8 }}
               />
-              <Line
-                type="monotone"
-                dataKey="previsao"
-                stroke="#82ca9d"
-                strokeDasharray="5 5"
-                name="Previsão"
-                dot={<DiamondDot />}
-                activeDot={{ r: 8 }}
-              />
+
             </LineChart>
           </div>
 
@@ -236,12 +226,6 @@ function Graficos01() {
             </div>
             <div className="frase-relatorio-menor">
               {relatorio || 'Carregando relatório...'}
-            </div>
-            <div className="frase-relatorio" style={{ marginTop: "28px" }}>
-              Previsões:
-            </div>
-            <div className="frase-previsao-menor">
-              {previsoes || 'Carregando previsões...'}
             </div>
           </div>
         </div>

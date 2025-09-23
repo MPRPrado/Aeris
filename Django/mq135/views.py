@@ -51,79 +51,37 @@ from .utils import gerar_relatorio
 #    return JsonResponse({'status': 'erro', 'mensagem': 'Método não permitido'}, status=405)
 
 
-# Previsão mensal
-def prever_dados_mensal(request, contador):
-    # Calcular dia atual
-    # Cada 6 leituras = 1 dia
-    dia_atual = contador // 6
-    dias_totais = 30
-    dias_faltantes = dias_totais - dia_atual
-
-    # Só começa a prever depois do 15º dia
-    if dia_atual < 15:
-        return JsonResponse({'status': 'ok', 'mensagem': 'Ainda coletando dados, previsão disponível apenas a partir do 15º dia'}, status=200)
-
-    # Só roda se fechou um dia completo
-    if contador % 6 != 0:
-        return JsonResponse({'status': 'ok', 'mensagem': 'Previsão gerada somente ao final de cada dia'}, status=200)
-
-    if dias_faltantes <= 0:
-        return JsonResponse({'status': 'ok', 'mensagem': 'Previsão mensal já concluída'}, status=200)
-    
-    # Buscar todas as leituras
-    leituras = DadosSensor_mq135.objects.all().order_by('timestamp')
-    if leituras.count() < 4:
-        return JsonResponse({'status': 'erro', 'mensagem': 'Leituras insuficientes para previsão.'}, status=400)
-
-    # Converter queryset para DataFrame
-    df = pd.DataFrame.from_records(leituras.values('timestamp', 'nh3_ppm'))
-    df['timestamp'] = pd.to_datetime(df['timestamp'])
-    df = df.sort_values('timestamp')
-
-    # Criar coluna 'dia' (cada 4 leituras = 1 dia)
-    df['dia'] = (np.arange(len(df)) // 6) + 1
-
-    # Calcular média PPM por dia
-    df_dias = df.groupby('dia')['nh3_ppm'].mean().reset_index()
-
-    # Regressão linear
-    X = df_dias['dia'].values.reshape(-1, 1)
-    y = df_dias['nh3_ppm'].values.reshape(-1, 1)
-
-    modelo = linear_model.LinearRegression()
-    modelo.fit(X, y)
-
-    # Previsões
-    dias_para_prever = np.arange(dia_atual + 1, dias_totais + 1).reshape(-1, 1)
-    previsoes = modelo.predict(dias_para_prever).flatten()
-    
-    # Limitar previsões para não serem negativas
-    previsoes = np.maximum(previsoes, 0)
-
-    resultado = [{'dia': int(dia), 'previsao_ppm': float(ppm)} for dia, ppm in zip(dias_para_prever.flatten(), previsoes)]
-
-    return JsonResponse({
-        'status': 'ok',
-        'dia_atual': dia_atual,
-        'dias_totais': dias_totais,
-        'previsoes': resultado
-    })
 
 
-# Mostrar dados no HTML
+# Mostrar dados mensais no HTML
 def mostrar_dados(request):
-    leituras = DadosSensor_mq135.objects.all().order_by('-id')[:50]  # últimas 50 leituras
-
-    dados_formatados = [
-        {
-            'NH3': f"{dado.nh3_ppm:.1f}",
-            'disp': dado.dispositivo_id,
-            'id': dado.id
-        } for dado in leituras
-    ]
+    from datetime import datetime, timedelta
+    from django.db.models import Avg, Count
+    
+    # Pegar dados dos últimos 30 dias
+    data_limite = timezone.now() - timedelta(days=30)
+    leituras = DadosSensor_mq135.objects.filter(timestamp__gte=data_limite).order_by('timestamp')
+    
+    # Agrupar por dia (6 leituras = 1 dia)
+    dados_mensais = []
+    leituras_list = list(leituras)
+    
+    for i in range(0, len(leituras_list), 6):
+        grupo_dia = leituras_list[i:i+6]
+        if grupo_dia:
+            dia_numero = (i // 6) + 1
+            media_nh3 = sum(l.nh3_ppm for l in grupo_dia) / len(grupo_dia)
+            dados_mensais.append({
+                'dia': dia_numero,
+                'media_nh3': f"{media_nh3:.1f}",
+                'total_leituras': len(grupo_dia)
+            })
+    
+    # Limitar a 30 dias
+    dados_mensais = dados_mensais[:30]
 
     context = {
-        'dados': dados_formatados,
+        'dados_mensais': dados_mensais,
         'total_registros': DadosSensor_mq135.objects.count(),
     }
     return render(request, 'wifi/dados.html', context)

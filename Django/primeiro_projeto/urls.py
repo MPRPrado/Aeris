@@ -18,8 +18,6 @@ urlpatterns = [
     # MQ135
     path('mq135/', mq135_views.mostrar_dados, name='mostrar_dados_mq135'),
     path('mq135/relatorio/', mq135_views.relatorio_api, name='relatorio_mq135_api'),
- 
-    path('mq135/prever/<int:contador>/', mq135_views.prever_dados_mensal, name='prever_dados'),
 
     # MQ2
     path('mq2/', mq2_views.mostrar_dados, name='mostrar_dados_mq2'),
