@@ -22,16 +22,18 @@ function Graficos03() {
       try {
         const response = await axios.get('http://127.0.0.1:8000/api/usuarios/');
         if (response.data && response.data.results && response.data.results.length > 0) {
-          setNomeUsuario(response.data.results[0].nome);
-          localStorage.setItem('usuario', JSON.stringify(response.data.results[0]));
+          // Buscar usuário por email logado (gatinho@gmail.com)
+          const usuarioLogado = response.data.results.find(user => user.email === 'gatinho@gmail.com');
+          if (usuarioLogado) {
+            setNomeUsuario(usuarioLogado.nome);
+          } else {
+            // Se não encontrar, usar o primeiro
+            setNomeUsuario(response.data.results[0].nome);
+          }
         }
       } catch (error) {
         console.error('Erro ao buscar dados do usuário:', error);
-        const savedUser = localStorage.getItem('usuario');
-        if (savedUser) {
-          const userData = JSON.parse(savedUser);
-          setNomeUsuario(userData.nome);
-        }
+        setNomeUsuario('Usuário');
       }
     };
 
@@ -41,12 +43,10 @@ function Graficos03() {
       try {
         const response = await axios.get('http://localhost:8000/mq135/relatorio/');
         if (response.data) {
-          const { variacao_4_semanas, variacao_inicio_mes, aumento_segunda_semana, previsao_min, previsao_max } = response.data;
+          const { variacao_4_semanas, variacao_inicio_mes, aumento_segunda_semana} = response.data;
           
           const relatorioTexto = `Nas últimas semanas, os dados coletados pelo sensor registraram uma queda de ${variacao_4_semanas}% na emissão de gases em comparação com a média das quatro semanas anteriores. Em relação ao início do mês, a redução foi ainda mais expressiva, chegando a ${variacao_inicio_mes}%, indicando uma possível melhora nas condições ambientais da região monitorada. Até a segunda semana do mês, os níveis de emissão haviam apresentado um aumento acumulado de ${aumento_segunda_semana}% em relação ao mês anterior, o que havia gerado alerta para possíveis impactos na qualidade do ar.`;
-          
-          const previsaoTexto = `Com base na tendência atual e nos dados históricos, a projeção para as próximas duas semanas indica uma redução adicional entre ${previsao_min}% e ${previsao_max}%, caso as condições se mantenham estáveis. Essa estimativa considera fatores como clima, tráfego e atividade industrial. A continuidade do monitoramento é essencial para confirmar essa trajetória de queda e permitir ações preventivas caso ocorra uma nova oscilação nos níveis de emissão.`;
-          
+                  
           setRelatorio(relatorioTexto);
         }
       } catch (error) {
@@ -110,7 +110,17 @@ function Graficos03() {
           }
         }
         
-        setDados(dadosProcessados);
+        // Calcular média dos valores
+        const valoresValidos = dadosProcessados.filter(item => item.valor !== null).map(item => item.valor);
+        const media = valoresValidos.length > 0 ? valoresValidos.reduce((acc, val) => acc + val, 0) / valoresValidos.length : 0;
+        
+        // Adicionar linha de média a todos os pontos
+        const dadosComMedia = dadosProcessados.map(item => ({
+          ...item,
+          media: media
+        }));
+        
+        setDados(dadosComMedia);
       } catch (error) {
         console.error('Erro ao buscar dados:', error);
       }
@@ -139,7 +149,7 @@ function Graficos03() {
         </div>
         {/* Usuário */}
         <div className="usuarioContainer">
-          <span>{nomeUsuario}</span>
+          <span style={{ color: "#ff6600" }}>{nomeUsuario}</span>
           <img src="/user (1) 1.png" alt="Ícone Usuário" />
         </div>
       </div>
@@ -205,6 +215,15 @@ function Graficos03() {
                 name="NH3"
                 dot={false}
                 activeDot={{ r: 8 }}
+              />
+              <Line
+                type="monotone"
+                dataKey="media"
+                stroke="#999999"
+                strokeWidth={2}
+                strokeDasharray="5 5"
+                name="Média"
+                dot={false}
               />
 
             </LineChart>

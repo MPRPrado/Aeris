@@ -22,16 +22,18 @@ function Graficos02() {
       try {
         const response = await axios.get('http://127.0.0.1:8000/api/usuarios/');
         if (response.data && response.data.results && response.data.results.length > 0) {
-          setNomeUsuario(response.data.results[0].nome);
-          localStorage.setItem('usuario', JSON.stringify(response.data.results[0]));
+          // Buscar usuário por email logado (gatinho@gmail.com)
+          const usuarioLogado = response.data.results.find(user => user.email === 'gatinho@gmail.com');
+          if (usuarioLogado) {
+            setNomeUsuario(usuarioLogado.nome);
+          } else {
+            // Se não encontrar, usar o primeiro
+            setNomeUsuario(response.data.results[0].nome);
+          }
         }
       } catch (error) {
         console.error('Erro ao buscar dados do usuário:', error);
-        const savedUser = localStorage.getItem('usuario');
-        if (savedUser) {
-          const userData = JSON.parse(savedUser);
-          setNomeUsuario(userData.nome);
-        }
+        setNomeUsuario('Usuário');
       }
     };
 
@@ -107,7 +109,17 @@ function Graficos02() {
           }
         }
         
-        setDados(dadosProcessados);
+        // Calcular média dos valores
+        const valoresValidos = dadosProcessados.filter(item => item.valor !== null).map(item => item.valor);
+        const media = valoresValidos.length > 0 ? valoresValidos.reduce((acc, val) => acc + val, 0) / valoresValidos.length : 0;
+        
+        // Adicionar linha de média a todos os pontos
+        const dadosComMedia = dadosProcessados.map(item => ({
+          ...item,
+          media: media
+        }));
+        
+        setDados(dadosComMedia);
       } catch (error) {
         console.error('Erro ao buscar dados:', error);
       }
@@ -134,7 +146,7 @@ function Graficos02() {
         </div>
         {/* Usuário */}
         <div className="usuarioContainer">
-          <span>{nomeUsuario}</span>
+          <span style={{ color: "#ff6600" }}>{nomeUsuario}</span>
           <img src="/user (1) 1.png" alt="Ícone Usuário" />
         </div>
       </div>
@@ -169,7 +181,7 @@ function Graficos02() {
           </select>
           
           <div className="frase-topo-caixa-maior">
-            Sensor MQ7 - Dados Mensais: Propano (C3H8)
+            Sensor MQ7 - Dados Mensais: Monóxido de Carbono (CO)
           </div>
           {/* Gráfico abaixo da frase */}
           <div style={{ width: "100%", display: "flex", justifyContent: "center", marginTop: "50px" }}>
@@ -200,6 +212,15 @@ function Graficos02() {
                 name="CO"
                 dot={false}
                 activeDot={{ r: 8 }}
+              />
+              <Line
+                type="monotone"
+                dataKey="media"
+                stroke="#999999"
+                strokeWidth={2}
+                strokeDasharray="5 5"
+                name="Média"
+                dot={false}
               />
 
             </LineChart>

@@ -12,16 +12,18 @@ function App() {
       try {
         const response = await axios.get('http://127.0.0.1:8000/api/usuarios/');
         if (response.data && response.data.results && response.data.results.length > 0) {
-          setNomeUsuario(response.data.results[0].nome);
-          localStorage.setItem('usuario', JSON.stringify(response.data.results[0]));
+          // Buscar usuário por email logado (gatinho@gmail.com)
+          const usuarioLogado = response.data.results.find(user => user.email === 'gatinho@gmail.com');
+          if (usuarioLogado) {
+            setNomeUsuario(usuarioLogado.nome);
+          } else {
+            // Se não encontrar, usar o primeiro
+            setNomeUsuario(response.data.results[0].nome);
+          }
         }
       } catch (error) {
         console.error('Erro ao buscar dados do usuário:', error);
-        const savedUser = localStorage.getItem('usuario');
-        if (savedUser) {
-          const userData = JSON.parse(savedUser);
-          setNomeUsuario(userData.nome);
-        }
+        setNomeUsuario('Usuário');
       }
     };
 
@@ -42,12 +44,12 @@ function App() {
       </div>
 
       <div className="frasePequena">
-        Bem-vindo {nomeUsuario || 'usuário'}!
+        Bem-vindo <span style={{ color: "#ff6600" }}>{nomeUsuario || 'usuário'}</span>!
       </div>
 
       {/* Usuário no canto direito */}
       <div className="usuarioContainer">
-        <span>{nomeUsuario}</span>
+        <span style={{ color: "#ff6600" }}>{nomeUsuario}</span>
         <img src="/user (1) 1.png" alt="Ícone Usuário" />
       </div>
 
@@ -82,7 +84,7 @@ function App() {
               className="textoCirculo botaoSensor"
               onClick={() => navigate('/sensor-mq7')}
             >
-              Sensor MQ7 - Dados de captação: Propano(C3h8)
+              Sensor MQ7 - Dados de captação: Monóxido de Carbono(CO)
             </span>
             <span className="textoMenor">Gráfico e relatório disponíveis</span>
             <div className="linhaAbaixoTextoMenor"></div>

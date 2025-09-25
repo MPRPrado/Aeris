@@ -22,16 +22,16 @@ function Graficos01() {
       try {
         const response = await axios.get('http://127.0.0.1:8000/api/usuarios/');
         if (response.data && response.data.results && response.data.results.length > 0) {
-          setNomeUsuario(response.data.results[0].nome);
-          localStorage.setItem('usuario', JSON.stringify(response.data.results[0]));
+          const usuarioLogado = response.data.results.find(user => user.email === 'gatinho@gmail.com');
+          if (usuarioLogado) {
+            setNomeUsuario(usuarioLogado.nome);
+          } else {
+            setNomeUsuario(response.data.results[0].nome);
+          }
         }
       } catch (error) {
         console.error('Erro ao buscar dados do usuário:', error);
-        const savedUser = localStorage.getItem('usuario');
-        if (savedUser) {
-          const userData = JSON.parse(savedUser);
-          setNomeUsuario(userData.nome);
-        }
+        setNomeUsuario('Usuário');
       }
     };
 
@@ -111,10 +111,19 @@ function Graficos01() {
           }
         }
         
+        // Calcular média dos valores
+        const valoresValidos = dadosProcessados.filter(item => item.valor !== null).map(item => item.valor);
+        const media = valoresValidos.length > 0 ? valoresValidos.reduce((acc, val) => acc + val, 0) / valoresValidos.length : 0;
+        
+        // Adicionar linha de média a todos os pontos
+        const dadosComMedia = dadosProcessados.map(item => ({
+          ...item,
+          media: media
+        }));
+        
         console.log('Dados processados:', dadosProcessados.length, 'itens');
-        console.log('Primeiros 5 dados:', dadosProcessados.slice(0, 5));
-        console.log('Últimos 5 dados:', dadosProcessados.slice(-5));
-        setDados(dadosProcessados);
+        console.log('Média calculada:', media.toFixed(2));
+        setDados(dadosComMedia);
       } catch (error) {
         console.error('Erro ao buscar dados:', error);
       }
@@ -122,7 +131,6 @@ function Graficos01() {
 
     buscarDados();
     buscarRelatorio();
-    // Sem atualização automática - dados mensais fixos
   }, [filtro]); // Recarregar quando filtro mudar
 
   return (
@@ -141,7 +149,7 @@ function Graficos01() {
         </div>
         {/* Usuário - Modificação aqui */}
         <div className="usuarioContainer">
-          <span>{nomeUsuario}</span>
+          <span style={{ color: "#ff6600" }}>{nomeUsuario}</span>
           <img src="/user (1) 1.png" alt="Ícone Usuário" />
         </div>
       </div>
@@ -207,6 +215,15 @@ function Graficos01() {
                 name="C4H10"
                 dot={false}
                 activeDot={{ r: 8 }}
+              />
+              <Line
+                type="monotone"
+                dataKey="media"
+                stroke="#999999"
+                strokeWidth={2}
+                strokeDasharray="5 5"
+                name="Média"
+                dot={false}
               />
 
             </LineChart>
