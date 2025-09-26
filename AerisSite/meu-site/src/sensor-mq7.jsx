@@ -113,10 +113,12 @@ function Graficos02() {
         const valoresValidos = dadosProcessados.filter(item => item.valor !== null).map(item => item.valor);
         const media = valoresValidos.length > 0 ? valoresValidos.reduce((acc, val) => acc + val, 0) / valoresValidos.length : 0;
         
-        // Adicionar linha de média a todos os pontos
+        // Adicionar linha de média e linhas de referência a todos os pontos
         const dadosComMedia = dadosProcessados.map(item => ({
           ...item,
-          media: media
+          media: media,
+          baixo: 1000,   // Verde - até 1000 ppm
+          medio: 8000    // Amarelo - até 8000 ppm
         }));
         
         setDados(dadosComMedia);
@@ -193,13 +195,13 @@ function Graficos02() {
                 axisLine={true}
               />
               <YAxis 
-                domain={[0, 'auto']}
+                domain={[0, 10000]}
                 label={{ value: 'PPM', angle: -90, position: 'insideLeft' }}
               />
               <Tooltip 
                 formatter={(value, name, props) => {
-                  if (value === null) return ['N/A', `${props.payload.nome} - Concentração`];
-                  return [`${value.toFixed(2)} ppm`, `${props.payload.nome} - Concentração`];
+                  if (value === null) return ['N/A', name === 'Média' ? 'Média' : name === 'Nível Baixo' ? 'Nível Baixo' : name === 'Nível Médio' ? 'Nível Médio' : `${props.payload.nome} - Concentração`];
+                  return [`${value.toFixed(2)} ppm`, name === 'Média' ? 'Média' : name === 'Nível Baixo' ? 'Nível Baixo' : name === 'Nível Médio' ? 'Nível Médio' : `${props.payload.nome} - Concentração`];
                 }}
                 labelFormatter={() => ''}
               />
@@ -220,6 +222,24 @@ function Graficos02() {
                 strokeWidth={2}
                 strokeDasharray="5 5"
                 name="Média"
+                dot={false}
+              />
+              <Line
+                type="monotone"
+                dataKey="baixo"
+                stroke="#00ff00"
+                strokeWidth={1}
+                strokeDasharray="3 3"
+                name="Nível Baixo"
+                dot={false}
+              />
+              <Line
+                type="monotone"
+                dataKey="medio"
+                stroke="#ffff00"
+                strokeWidth={1}
+                strokeDasharray="3 3"
+                name="Nível Médio"
                 dot={false}
               />
 
