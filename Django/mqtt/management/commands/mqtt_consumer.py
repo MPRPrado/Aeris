@@ -11,28 +11,17 @@ MQTT_PORT = 1883
 
 def on_connect(client, userdata, flags, rc):
     print("Conectado ao broker MQTT")
-    client.subscribe("sensores/mq135")
+    #client.subscribe("sensores/mq135")
     client.subscribe("sensores/mq2")
-    client.subscribe("sensores/mq7")
+    #client.subscribe("sensores/mq7")
 
 def on_message(client, userdata, msg):
-    payload = msg.payload.decode()
+    payload = msg.payload.decode().strip()
     print(f"[{msg.topic}] {payload}")
-
     try:
-        Rs = float(payload)
+        ppm = float(payload)
 
         if msg.topic == "sensores/mq135":
-            # Conversão Rs → ppm (NH3)
-            R0 = 148553.2
-            ratio = Rs / R0
-            A_NH3 = 7.4482 
-            B_NH3 = -0.4382
-            if ratio >= 1.0:
-                ppm = 0.0
-            else:
-                ppm = (ratio / A_NH3) ** (1 / B_NH3)
-
             DadosSensor_mq135.objects.create(
                 nh3_ppm=ppm,
                 dispositivo_id="ESP32_MQ135"
@@ -42,39 +31,25 @@ def on_message(client, userdata, msg):
             # Verificar alerta
             enviar_alerta_email(ppm, 'mq135', 'usuario@email.com')
 
-        elif msg.topic == "sensores/mq2":
-            R0 = 207974.5
-            A_BUTANO = 37.84 
-            B_BUTANO = -0.434
-
-            ratio = Rs / R0
-            ppm_mq2 = A_BUTANO * math.pow(ratio, B_BUTANO)
+        elif msg.topic == "sensores/mq2":          
             DadosSensor_mq2.objects.create(
-                c4h10_ppm=ppm_mq2,
+                c4h10_ppm=ppm,
                 dispositivo_id="ESP32_MQ2"
             )
-            print(f"MQ2 salvo no banco: Rs = {Rs:.2f}")
+            print(f"MQ2 salvo no banco: Rs = {ppm:.2f}")
             
             # Verificar alerta
-            enviar_alerta_email(ppm_mq2, 'mq2', 'usuario@email.com')
+            enviar_alerta_email(ppm, 'mq2', 'usuario@email.com')
        
         elif msg.topic == "sensores/mq7":
-            R0 = 22269.50
-            ratio = Rs / R0
-            A_CO = 13.08
-            B_CO = -0.895
-
-            # Fórmula para o MQ-7 (CO)
-            ppm_mq7 = A_CO * math.pow(ratio, B_CO)
-
             DadosSensor_mq7.objects.create(
-            co_ppm=ppm_mq7,
+            co_ppm=ppm,
             dispositivo_id="ESP32_MQ7"
             )
-            print(f"MQ7 salvo no banco: Rs = {Rs:.2f}, ppm = {ppm_mq7:.2f}")
+            print(f"MQ7 salvo no banco: Rs = {ppm:.2f}, ppm = {ppm:.2f}")
             
             # Verificar alerta
-            enviar_alerta_email(ppm_mq7, 'mq7', 'usuario@email.com')
+            enviar_alerta_email(ppm, 'mq7', 'usuario@email.com')
 
     except ValueError:
         print("Erro: payload inválido")
