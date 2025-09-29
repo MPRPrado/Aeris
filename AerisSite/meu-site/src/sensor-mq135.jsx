@@ -230,8 +230,8 @@ function Graficos03() {
               <Line
                 type="monotone"
                 dataKey="baixo"
-                stroke="#00ff00"
-                strokeWidth={1}
+                stroke="#00ff00ff"
+                strokeWidth={3}
                 strokeDasharray="3 3"
                 name="Nível Baixo"
                 dot={false}
@@ -239,8 +239,8 @@ function Graficos03() {
               <Line
                 type="monotone"
                 dataKey="medio"
-                stroke="#ffff00"
-                strokeWidth={1}
+                stroke="#d4d400ff"
+                strokeWidth={3}
                 strokeDasharray="3 3"
                 name="Nível Médio"
                 dot={false}

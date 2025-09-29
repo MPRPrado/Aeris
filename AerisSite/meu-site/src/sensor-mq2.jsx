@@ -198,7 +198,7 @@ function Graficos01() {
                 axisLine={true}
               />
               <YAxis 
-                domain={[0, 3000]}
+                domain={[0, 30000]}
                 label={{ value: 'PPM', angle: -90, position: 'insideLeft' }}
               />
               <Tooltip 
@@ -230,8 +230,8 @@ function Graficos01() {
               <Line
                 type="monotone"
                 dataKey="baixo"
-                stroke="#00ff00"
-                strokeWidth={1}
+                stroke="#00ff00ff"
+                strokeWidth={3}
                 strokeDasharray="3 3"
                 name="Nível Baixo"
                 dot={false}
@@ -239,8 +239,8 @@ function Graficos01() {
               <Line
                 type="monotone"
                 dataKey="medio"
-                stroke="#ffff00"
-                strokeWidth={1}
+                stroke="#d4d400ff"
+                strokeWidth={3}
                 strokeDasharray="3 3"
                 name="Nível Médio"
                 dot={false}

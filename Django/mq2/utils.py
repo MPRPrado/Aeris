@@ -1,9 +1,7 @@
 import numpy as np
-import pandas as pd
 from datetime import timedelta
 from django.utils import timezone
 from django.db import DatabaseError
-from sklearn import linear_model
 from .models import DadosSensor_mq2 as DadosSensor
 
 def gerar_relatorio():

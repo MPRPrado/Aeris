@@ -146,3 +146,11 @@ REST_FRAMEWORK = {
     'PAGE_SIZE_QUERY_PARAM': 'page_size',
     'MAX_PAGE_SIZE': 2000
 }
+
+# Configuração de Email
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'aeris2K25' 
+EMAIL_HOST_PASSWORD = 'aeris123' 

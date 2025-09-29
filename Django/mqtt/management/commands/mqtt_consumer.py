@@ -4,6 +4,7 @@ import math
 from mq135.models import DadosSensor_mq135
 from mq2.models import DadosSensor_mq2
 from mq7.models import DadosSensor_mq7
+from alertas import enviar_alerta_email
 
 MQTT_SERVER = "localhost"   # ajuste para o IP do seu broker
 MQTT_PORT = 1883
@@ -37,6 +38,9 @@ def on_message(client, userdata, msg):
                 dispositivo_id="ESP32_MQ135"
             )
             print(f"MQ135 salvo no banco: {ppm:.2f} ppm NH3")
+            
+            # Verificar alerta
+            enviar_alerta_email(ppm, 'mq135', 'usuario@email.com')
 
         elif msg.topic == "sensores/mq2":
             R0 = 207974.5
@@ -50,6 +54,9 @@ def on_message(client, userdata, msg):
                 dispositivo_id="ESP32_MQ2"
             )
             print(f"MQ2 salvo no banco: Rs = {Rs:.2f}")
+            
+            # Verificar alerta
+            enviar_alerta_email(ppm_mq2, 'mq2', 'usuario@email.com')
        
         elif msg.topic == "sensores/mq7":
             R0 = 22269.50
@@ -65,6 +72,9 @@ def on_message(client, userdata, msg):
             dispositivo_id="ESP32_MQ7"
             )
             print(f"MQ7 salvo no banco: Rs = {Rs:.2f}, ppm = {ppm_mq7:.2f}")
+            
+            # Verificar alerta
+            enviar_alerta_email(ppm_mq7, 'mq7', 'usuario@email.com')
 
     except ValueError:
         print("Erro: payload inválido")
