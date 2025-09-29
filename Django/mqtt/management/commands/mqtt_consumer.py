@@ -4,7 +4,9 @@ import math
 from mq135.models import DadosSensor_mq135
 from mq2.models import DadosSensor_mq2
 from mq7.models import DadosSensor_mq7
+from app_cad_usuario.models import Usuario
 from alertas import enviar_alerta_email
+from usuario_logado import get_usuario_logado
 
 MQTT_SERVER = "localhost"   # ajuste para o IP do seu broker
 MQTT_PORT = 1883
@@ -28,8 +30,13 @@ def on_message(client, userdata, msg):
             )
             print(f"MQ135 salvo no banco: {ppm:.2f} ppm NH3")
             
-            # Verificar alerta
-            enviar_alerta_email(ppm, 'mq135', 'usuario@email.com')
+            # Verificar alerta - buscar email do usuário logado
+            try:
+                usuario = get_usuario_logado()
+                if usuario:
+                    enviar_alerta_email(ppm, 'mq135', usuario.email)
+            except Exception as e:
+                print(f"Erro ao buscar usuário: {e}")
 
         elif msg.topic == "sensores/mq2":          
             DadosSensor_mq2.objects.create(
@@ -38,8 +45,13 @@ def on_message(client, userdata, msg):
             )
             print(f"MQ2 salvo no banco: Rs = {ppm:.2f}")
             
-            # Verificar alerta
-            enviar_alerta_email(ppm, 'mq2', 'usuario@email.com')
+            # Verificar alerta - buscar email do usuário logado
+            try:
+                usuario = get_usuario_logado()
+                if usuario:
+                    enviar_alerta_email(ppm, 'mq2', usuario.email)
+            except Exception as e:
+                print(f"Erro ao buscar usuário: {e}")
        
         elif msg.topic == "sensores/mq7":
             DadosSensor_mq7.objects.create(
@@ -48,8 +60,13 @@ def on_message(client, userdata, msg):
             )
             print(f"MQ7 salvo no banco: Rs = {ppm:.2f}, ppm = {ppm:.2f}")
             
-            # Verificar alerta
-            enviar_alerta_email(ppm, 'mq7', 'usuario@email.com')
+            # Verificar alerta - buscar email do usuário logado
+            try:
+                usuario = get_usuario_logado()
+                if usuario:
+                    enviar_alerta_email(ppm, 'mq7', usuario.email)
+            except Exception as e:
+                print(f"Erro ao buscar usuário: {e}")
 
     except ValueError:
         print("Erro: payload inválido")

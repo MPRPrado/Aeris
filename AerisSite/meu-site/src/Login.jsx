@@ -1,27 +1,43 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from './AuthContext';
 import axios from 'axios';
 
 export default function Login() { 
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [mostrarSenha, setMostrarSenha] = useState(false);
+  const [erro, setErro] = useState('');
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Aqui você pode adicionar a lógica de autenticação
+    setErro('');
+    
     try {
-      await axios.get('http://127.0.0.1:8000/api/usuarios/', {
-        email,
-        senha,
-      });
-      console.log('E-mail:', email);
-      console.log('Senha:', senha);
-      navigate('/TelaPrincipal');
+      // Buscar todos os usuários
+      const response = await axios.get('http://127.0.0.1:8000/api/usuarios/');
+      
+      // Encontrar usuário por email
+      const usuario = response.data.results.find(user => user.email === email);
+      
+      if (usuario) {
+        // Definir usuário ativo no backend
+        await axios.post('http://127.0.0.1:8000/api/usuario-ativo/', {
+          usuario_id: usuario.id_usuario,
+          email: usuario.email
+        });
+        
+        // Fazer login no frontend
+        login(usuario);
+        navigate('/TelaPrincipal');
+      } else {
+        setErro('Email não encontrado');
+      }
     } catch (error) {
       console.error('Erro ao fazer login:', error);
-      alert('Erro ao fazer login. Tente novamente.');
+      setErro('Erro ao fazer login. Tente novamente.');
     }
   };
 
@@ -37,6 +53,12 @@ export default function Login() {
         <p className="sub-frase">Bem-vindo de volta a nossa plataforma!</p>
         <p className="sub-sub-frase">Entre na sua conta para continuar</p>
       </div>
+
+      {erro && (
+        <div style={{ color: 'red', textAlign: 'center', marginBottom: '1em' }}>
+          {erro}
+        </div>
+      )}
 
       {/* Primeira caixa de texto, um pouco abaixo */}
       <div className="form-container" style={{ marginTop: '2em' }}>

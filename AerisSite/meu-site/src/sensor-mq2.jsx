@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import './App.css';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from './AuthContext';
 import axios from 'axios';
 
 // Estado inicial como array vazio
@@ -13,29 +14,16 @@ const dadosIniciais = [];
 function Graficos01() {
   const navigate = useNavigate();
   const [dados, setDados] = useState(dadosIniciais);
-  const [nomeUsuario, setNomeUsuario] = useState('');
   const [relatorio, setRelatorio] = useState('');
   const [filtro, setFiltro] = useState('mensal'); // mensal, semanal, diario
+  const { usuario } = useAuth();
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const response = await axios.get('http://127.0.0.1:8000/api/usuarios/');
-        if (response.data && response.data.results && response.data.results.length > 0) {
-          const usuarioLogado = response.data.results.find(user => user.email === 'gatinho@gmail.com');
-          if (usuarioLogado) {
-            setNomeUsuario(usuarioLogado.nome);
-          } else {
-            setNomeUsuario(response.data.results[0].nome);
-          }
-        }
-      } catch (error) {
-        console.error('Erro ao buscar dados do usuário:', error);
-        setNomeUsuario('Usuário');
-      }
-    };
-
-    fetchUserData();
+    // Redirecionar se não estiver logado
+    if (!usuario) {
+      navigate('/login');
+      return;
+    }
     
     const buscarRelatorio = async () => {
       try {
@@ -151,7 +139,7 @@ function Graficos01() {
         </div>
         {/* Usuário - Modificação aqui */}
         <div className="usuarioContainer">
-          <span style={{ color: "#ff6600" }}>{nomeUsuario}</span>
+          <span style={{ color: "#ff6600" }}>{usuario.nome}</span>
           <img src="/user (1) 1.png" alt="Ícone Usuário" />
         </div>
       </div>

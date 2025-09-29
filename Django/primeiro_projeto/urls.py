@@ -22,12 +22,8 @@ urlpatterns = [
     # MQ2
     path('mq2/', mq2_views.mostrar_dados, name='mostrar_dados_mq2'),
     path('mq2/relatorio/', mq2_views.relatorio_api, name='relatorio_mq2_api'),
-
-    path('mq2/prever/<int:contador>/', mq2_views.prever_dados_mensal, name='prever_dados_mq2'),
     
     # MQ7
     path('mq7/', mq7_views.mostrar_dados, name='mostrar_dados_mq7'),
     path('mq7/relatorio/', mq7_views.relatorio_api, name='relatorio_mq7_api'),
-
-    path('mq7/prever/<int:contador>/', mq7_views.prever_dados_mensal, name='prever_dados_mq7'),
 ]

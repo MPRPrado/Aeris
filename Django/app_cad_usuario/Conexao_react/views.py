@@ -11,6 +11,7 @@ from mq7.models import DadosSensor_mq7
 from .serializer import MQ2Serializer
 from .serializer import MQ135Serializer
 from .serializer import MQ7Serializer
+from usuario_ativo import set_usuario_ativo, get_usuario_ativo
 
 class UsuarioViewSet(viewsets.ModelViewSet):
     queryset = Usuario.objects.all()
@@ -58,4 +59,23 @@ class MQ135ViewSet(viewsets.ModelViewSet):
 class MQ7ViewSet(viewsets.ModelViewSet):
     queryset = DadosSensor_mq7.objects.all().order_by('-timestamp')
     serializer_class = MQ7Serializer
+
+class UsuarioAtivoAPI(APIView):
+    def post(self, request):
+        """Define qual usuário está ativo"""
+        usuario_id = request.data.get('usuario_id')
+        email = request.data.get('email')
+        
+        if usuario_id and email:
+            if set_usuario_ativo(usuario_id, email):
+                return Response({'message': 'Usuário ativo definido'}, status=status.HTTP_200_OK)
+        
+        return Response({'error': 'Dados inválidos'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    def get(self, request):
+        """Retorna qual usuário está ativo"""
+        usuario_ativo = get_usuario_ativo()
+        if usuario_ativo:
+            return Response(usuario_ativo, status=status.HTTP_200_OK)
+        return Response({'message': 'Nenhum usuário ativo'}, status=status.HTTP_404_NOT_FOUND)
 

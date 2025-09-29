@@ -1,34 +1,23 @@
+import React, { useEffect } from 'react';
 import './App.css'
 import { useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useAuth } from './AuthContext';
+import React from 'react';
 
 function App() {
   const navigate = useNavigate();
-  const [nomeUsuario, setNomeUsuario] = useState('');
+  const { usuario, logout } = useAuth();
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const response = await axios.get('http://127.0.0.1:8000/api/usuarios/');
-        if (response.data && response.data.results && response.data.results.length > 0) {
-          // Buscar usuário por email logado (gatinho@gmail.com)
-          const usuarioLogado = response.data.results.find(user => user.email === 'gatinho@gmail.com');
-          if (usuarioLogado) {
-            setNomeUsuario(usuarioLogado.nome);
-          } else {
-            // Se não encontrar, usar o primeiro
-            setNomeUsuario(response.data.results[0].nome);
-          }
-        }
-      } catch (error) {
-        console.error('Erro ao buscar dados do usuário:', error);
-        setNomeUsuario('Usuário');
-      }
-    };
+    // Redirecionar para login se não estiver logado
+    if (!usuario) {
+      navigate('/login');
+    }
+  }, [usuario, navigate]);
 
-    fetchUserData();
-  }, []);
+  if (!usuario) {
+    return null;
+  }
 
   return (
     <div className="tela-principal-fixa">
@@ -44,13 +33,14 @@ function App() {
       </div>
 
       <div className="frasePequena">
-        Bem-vindo <span style={{ color: "#ff6600" }}>{nomeUsuario || 'usuário'}</span>!
+        Bem-vindo <span style={{ color: "#ff6600" }}>{usuario.nome}</span>!
       </div>
 
       {/* Usuário no canto direito */}
       <div className="usuarioContainer">
-        <span style={{ color: "#ff6600" }}>{nomeUsuario}</span>
+        <span style={{ color: "#ff6600" }}>{usuario.nome}</span>
         <img src="/user (1) 1.png" alt="Ícone Usuário" />
+        <button onClick={logout} style={{ marginLeft: '10px', padding: '5px 10px', fontSize: '12px' }}>Sair</button>
       </div>
 
       <div className="fraseSensoresConectados">
