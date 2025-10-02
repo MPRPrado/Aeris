@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from .models import Usuario
 from django.contrib.auth.hashers import make_password, check_password
+from .esp_utils import funcao_cad_esp
 # Create your views here.
 def home(request):
     return render(request, 'usuario/home.html')
@@ -36,6 +37,10 @@ def usuario(request):
                 senha=senha
             )
             novo_usuario.save()
+            
+            # Cria ESP fictício automaticamente
+            funcao_cad_esp(novo_usuario.id_usuario)
+            
             return redirect('listagem_usuarios')
         except Exception as e:
             contexto = {

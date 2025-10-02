@@ -11,7 +11,11 @@ from alertas import enviar_alerta_email
 
 # Mostrar dados no HTML
 def mostrar_dados(request):
-    leituras = DadosSensor_mq2.objects.all().order_by('-id')[:50]  # últimas 50 leituras
+    usuario_id = request.GET.get('usuario_id')
+    if usuario_id:
+        leituras = DadosSensor_mq2.objects.filter(usuario_id=usuario_id).order_by('-id')[:50]
+    else:
+        leituras = DadosSensor_mq2.objects.all().order_by('-id')[:50]  # últimas 50 leituras
 
     dados_formatados = [
         {
@@ -36,7 +40,23 @@ def mostrar_relatorio(request):
 
 # API para relatório (JSON)
 def relatorio_api(request):
-    relatorio = gerar_relatorio()
+    usuario_id = request.GET.get('usuario_id')
+    relatorio = gerar_relatorio(usuario_id)
     return JsonResponse(relatorio)
+
+# API para dados do sensor por usuário
+def dados_api(request):
+    usuario_id = request.GET.get('usuario_id')
+    if not usuario_id:
+        return JsonResponse({'error': 'usuario_id obrigatório'}, status=400)
+    
+    dados = DadosSensor_mq2.objects.filter(usuario_id=usuario_id).order_by('-timestamp')[:100]
+    dados_json = [{
+        'valor': dado.c4h10_ppm,
+        'timestamp': dado.timestamp.isoformat(),
+        'dispositivo': dado.dispositivo_id
+    } for dado in dados]
+    
+    return JsonResponse({'dados': dados_json})
 
 

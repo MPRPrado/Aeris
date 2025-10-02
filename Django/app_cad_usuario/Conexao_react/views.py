@@ -1,6 +1,7 @@
 from rest_framework import viewsets
 from rest_framework.decorators import action
-from app_cad_usuario.models import Usuario
+from app_cad_usuario.models import Usuario, DispositivoESP
+from app_cad_usuario.esp_utils import funcao_cad_esp
 from .serializer import UsuarioSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -26,15 +27,44 @@ class SensorDataAPI(APIView):
         co_ppm = request.data.get("CO_ppm")
         c4h10_ppm = request.data.get("C4H10_ppm")
         nh3_ppm = request.data.get("NH3_ppm")
+        esp_id = request.data.get("esp_id", "ESP_REAL_AERIS_2025")  # ID do ESP
+        
+        # Buscar qual usuário possui este ESP
+        try:
+            dispositivo = DispositivoESP.objects.get(esp_id=esp_id)
+            usuario = dispositivo.usuario
+        except DispositivoESP.DoesNotExist:
+            # Se ESP não existe, usar usuário ativo
+            usuario_ativo = get_usuario_ativo()
+            if not usuario_ativo:
+                return Response({"error": "Nenhum usuário ativo"}, status=status.HTTP_400_BAD_REQUEST)
+            
+            try:
+                usuario = Usuario.objects.get(id_usuario=usuario_ativo['usuario_id'])
+            except Usuario.DoesNotExist:
+                return Response({"error": "Usuário ativo não encontrado"}, status=status.HTTP_400_BAD_REQUEST)
+        
         if c4h10_ppm is not None:
-            DadosSensor_mq2.objects.create(c4h10_ppm=c4h10_ppm)
-            return Response({"message": "Dados salvos com sucesso"}, status=status.HTTP_201_CREATED)
+            DadosSensor_mq2.objects.create(
+                usuario=usuario,
+                c4h10_ppm=c4h10_ppm,
+                dispositivo_id=esp_id
+            )
+            return Response({"message": "Dados MQ2 salvos com sucesso"}, status=status.HTTP_201_CREATED)
         if co_ppm is not None:
-            DadosSensor_mq7.objects.create(co_ppm=co_ppm)
-            return Response({"message": "Dados salvos com sucesso"}, status=status.HTTP_201_CREATED)
+            DadosSensor_mq7.objects.create(
+                usuario=usuario,
+                co_ppm=co_ppm,
+                dispositivo_id=esp_id
+            )
+            return Response({"message": "Dados MQ7 salvos com sucesso"}, status=status.HTTP_201_CREATED)
         if nh3_ppm is not None:
-            DadosSensor_mq135.objects.create(nh3_ppm=nh3_ppm)
-            return Response({"message": "Dados salvos com sucesso"}, status=status.HTTP_201_CREATED)
+            DadosSensor_mq135.objects.create(
+                usuario=usuario,
+                nh3_ppm=nh3_ppm,
+                dispositivo_id=esp_id
+            )
+            return Response({"message": "Dados MQ135 salvos com sucesso"}, status=status.HTTP_201_CREATED)
         return Response({"error": "Valor inválido"}, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=False, methods=['get'])
@@ -78,4 +108,57 @@ class UsuarioAtivoAPI(APIView):
         if usuario_ativo:
             return Response(usuario_ativo, status=status.HTTP_200_OK)
         return Response({'message': 'Nenhum usuário ativo'}, status=status.HTTP_404_NOT_FOUND)
+
+class DispositivosAPI(APIView):
+    def get(self, request):
+        """Buscar dispositivos de um usuário"""
+        usuario_id = request.GET.get('usuario_id')
+        
+        if not usuario_id:
+            return Response({'error': 'usuario_id obrigatório'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            usuario = Usuario.objects.get(id_usuario=usuario_id)
+            dispositivos = DispositivoESP.objects.filter(usuario=usuario)
+            
+            dispositivos_data = [{
+                'id': disp.id,
+                'esp_id': disp.esp_id,
+                'nome': disp.nome,
+                'tipo': disp.tipo,
+                'ativo': disp.ativo,
+                'criado_em': disp.criado_em.isoformat()
+            } for disp in dispositivos]
+            
+            return Response({
+                'dispositivos': dispositivos_data,
+                'total': len(dispositivos_data)
+            })
+            
+        except Usuario.DoesNotExist:
+            return Response({'error': 'Usuário não encontrado'}, status=status.HTTP_404_NOT_FOUND)
+
+class CadastrarESPAPI(APIView):
+    def post(self, request):
+        """Cadastrar novo ESP para usuário"""
+        usuario_id = request.data.get('usuario_id')
+        
+        if not usuario_id:
+            return Response({'error': 'usuario_id obrigatório'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Criar novo ESP
+        esp = funcao_cad_esp(usuario_id)
+        
+        if esp:
+            return Response({
+                'success': True,
+                'esp': {
+                    'id': esp.id,
+                    'esp_id': esp.esp_id,
+                    'nome': esp.nome,
+                    'tipo': esp.tipo
+                }
+            })
+        else:
+            return Response({'error': 'Erro ao criar ESP ou limite atingido'}, status=status.HTTP_400_BAD_REQUEST)
 

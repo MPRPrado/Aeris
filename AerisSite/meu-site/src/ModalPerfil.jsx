@@ -1,0 +1,107 @@
+import React, { useState, useEffect } from 'react';
+import { useAuth } from './AuthContext';
+import './ModalPerfil.css';
+
+const ModalPerfil = ({ isOpen, onClose }) => {
+  const { usuario, logout } = useAuth();
+  const [dispositivos, setDispositivos] = useState([]);
+  const [carregando, setCarregando] = useState(false);
+
+  const buscarDispositivos = () => {
+    if (usuario) {
+      fetch(`http://localhost:8000/api/dispositivos/?usuario_id=${usuario.id_usuario}`)
+        .then(res => res.json())
+        .then(data => setDispositivos(data.dispositivos || []))
+        .catch(err => console.error('Erro ao buscar dispositivos:', err));
+    }
+  };
+
+  const cadastrarNovoESP = async () => {
+    if (!usuario) return;
+    
+    setCarregando(true);
+    try {
+      const response = await fetch('http://localhost:8000/api/cadastrar-esp/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ usuario_id: usuario.id_usuario })
+      });
+      
+      if (response.ok) {
+        buscarDispositivos();
+        alert('ESP cadastrado com sucesso!');
+      } else {
+        alert('Erro ao cadastrar ESP');
+      }
+    } catch (error) {
+      console.error('Erro:', error);
+      alert('Erro ao cadastrar ESP');
+    }
+    setCarregando(false);
+  };
+
+  useEffect(() => {
+    if (isOpen) {
+      buscarDispositivos();
+    }
+  }, [isOpen, usuario]);
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={e => e.stopPropagation()}>
+        <div className="modal-header">
+          <h2>Perfil do Usuário</h2>
+          <button className="close-btn" onClick={onClose}>×</button>
+        </div>
+        
+        <div className="modal-body">
+          <div className="perfil-section">
+            <h3>Informações do Perfil</h3>
+            <p><strong>Nome:</strong> {usuario?.nome}</p>
+            <p><strong>Email:</strong> {usuario?.email}</p>
+          </div>
+
+          <div className="dispositivos-section">
+            <div className="dispositivos-header">
+              <h3>Medidores Cadastrados</h3>
+              <button 
+                className="add-dispositivo-btn" 
+                onClick={cadastrarNovoESP}
+                disabled={carregando}
+              >
+                {carregando ? 'Cadastrando...' : '+ Cadastrar ESP'}
+              </button>
+            </div>
+            {dispositivos.length > 0 ? (
+              <ul className="dispositivos-list">
+                {dispositivos.map(dispositivo => (
+                  <li key={dispositivo.id} className="dispositivo-item">
+                    <span className="dispositivo-nome">{dispositivo.nome}</span>
+                    <span className={`dispositivo-tipo ${dispositivo.tipo.toLowerCase()}`}>
+                      {dispositivo.tipo === 'REAL' ? 'Real' : 'Demo'}
+                    </span>
+                    <span className="dispositivo-id">{dispositivo.esp_id}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="no-dispositivos">Nenhum medidor cadastrado</p>
+            )}
+          </div>
+        </div>
+
+        <div className="modal-footer">
+          <button className="logout-btn" onClick={logout}>
+            Sair
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ModalPerfil;

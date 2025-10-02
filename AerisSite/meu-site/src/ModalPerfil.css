@@ -1,0 +1,173 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.modal-header h2 {
+  margin: 0;
+  color: #333;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #999;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.close-btn:hover {
+  color: #333;
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.perfil-section, .dispositivos-section {
+  margin-bottom: 25px;
+}
+
+.perfil-section h3, .dispositivos-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.dispositivos-section h3 {
+  color: #ff6600;
+  margin: 0;
+  font-size: 18px;
+}
+
+.add-dispositivo-btn {
+  background: #ff6600;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.add-dispositivo-btn:hover {
+  background: #e55a00;
+}
+
+.add-dispositivo-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.perfil-section p {
+  margin: 8px 0;
+  color: #333;
+}
+
+.dispositivos-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.dispositivo-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid #eee;
+  border-radius: 5px;
+  margin-bottom: 8px;
+  background: #f9f9f9;
+}
+
+.dispositivo-nome {
+  font-weight: bold;
+  color: #333;
+}
+
+.dispositivo-tipo {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.dispositivo-tipo.real {
+  background: #4CAF50;
+  color: white;
+}
+
+.dispositivo-tipo.demo {
+  background: #2196F3;
+  color: white;
+}
+
+.dispositivo-id {
+  font-family: monospace;
+  font-size: 12px;
+  color: #666;
+}
+
+.no-dispositivos {
+  color: #999;
+  font-style: italic;
+  text-align: center;
+  padding: 20px;
+}
+
+.modal-footer {
+  padding: 20px;
+  border-top: 1px solid #eee;
+  text-align: center;
+}
+
+.logout-btn {
+  background: #ff4444;
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.logout-btn:hover {
+  background: #cc0000;
+}

@@ -4,10 +4,13 @@ from django.utils import timezone
 from django.db import DatabaseError
 from .models import DadosSensor_mq2 as DadosSensor
 
-def gerar_relatorio():
+def gerar_relatorio(usuario_id=None):
     try:
         # Pegar últimas 180 leituras
-        dados = list(DadosSensor.objects.all().order_by('-timestamp')[:180].values_list("c4h10_ppm", flat=True))
+        if usuario_id:
+            dados = list(DadosSensor.objects.filter(usuario_id=usuario_id).order_by('-timestamp')[:180].values_list("c4h10_ppm", flat=True))
+        else:
+            dados = list(DadosSensor.objects.all().order_by('-timestamp')[:180].values_list("c4h10_ppm", flat=True))
         
         if len(dados) < 60:
             return "Sem dados suficientes."

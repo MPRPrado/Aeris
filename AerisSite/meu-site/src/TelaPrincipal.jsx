@@ -1,12 +1,13 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import './App.css'
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
-import React from 'react';
+import ModalPerfil from './ModalPerfil';
 
 function App() {
   const navigate = useNavigate();
-  const { usuario, logout } = useAuth();
+  const { usuario } = useAuth();
+  const [modalPerfilAberto, setModalPerfilAberto] = useState(false);
 
   useEffect(() => {
     // Redirecionar para login se não estiver logado
@@ -37,10 +38,9 @@ function App() {
       </div>
 
       {/* Usuário no canto direito */}
-      <div className="usuarioContainer">
+      <div className="usuarioContainer" onClick={() => setModalPerfilAberto(true)} style={{ cursor: 'pointer' }}>
         <span style={{ color: "#ff6600" }}>{usuario.nome}</span>
         <img src="/user (1) 1.png" alt="Ícone Usuário" />
-        <button onClick={logout} style={{ marginLeft: '10px', padding: '5px 10px', fontSize: '12px' }}>Sair</button>
       </div>
 
       <div className="fraseSensoresConectados">
@@ -116,6 +116,12 @@ function App() {
           Contate o Suporte
         </button>
       </div>
+
+      {/* Modal de Perfil */}
+      <ModalPerfil 
+        isOpen={modalPerfilAberto} 
+        onClose={() => setModalPerfilAberto(false)} 
+      />
     </div>
   )
 }

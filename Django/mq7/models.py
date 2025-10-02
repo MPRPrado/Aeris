@@ -1,6 +1,8 @@
 from django.db import models
+from app_cad_usuario.models import Usuario
 
 class DadosSensor_mq7(models.Model):
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, null=True, blank=True)
     co_ppm = models.FloatField(verbose_name='CO (ppm)')
     timestamp = models.DateTimeField(auto_now_add=True)
     dispositivo_id = models.CharField(max_length=50, blank=True, default='ESP32_MQ7')

@@ -27,3 +27,4 @@ def get_usuario_ativo():
     except Exception as e:
         print(f"Erro ao buscar usuário ativo: {e}")
         return None
+
