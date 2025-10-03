@@ -181,3 +181,40 @@ class DeletarESPAPI(APIView):
         except DispositivoESP.DoesNotExist:
             return Response({'error': 'ESP não encontrado'}, status=status.HTTP_404_NOT_FOUND)
 
+class CadastrarESPRealAPI(APIView):
+    def post(self, request):
+        """Cadastrar ESP real com MAC address"""
+        usuario_id = request.data.get('usuario_id')
+        mac_address = request.data.get('mac_address', '08:3A:F2:AC:1F:C8')  # MAC padrão
+        
+        if not usuario_id:
+            return Response({'error': 'usuario_id obrigatório'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            usuario = Usuario.objects.get(id_usuario=usuario_id)
+            
+            # Verificar se ESP real já existe
+            if DispositivoESP.objects.filter(esp_id=mac_address).exists():
+                return Response({'error': 'ESP real já cadastrado'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            # Criar ESP real
+            esp_real = DispositivoESP.objects.create(
+                usuario=usuario,
+                esp_id=mac_address,
+                nome=f"ESP Real - {usuario.nome}",
+                tipo="REAL"
+            )
+            
+            return Response({
+                'success': True,
+                'esp': {
+                    'id': esp_real.id,
+                    'esp_id': esp_real.esp_id,
+                    'nome': esp_real.nome,
+                    'tipo': esp_real.tipo
+                }
+            })
+            
+        except Usuario.DoesNotExist:
+            return Response({'error': 'Usuário não encontrado'}, status=status.HTTP_404_NOT_FOUND)
+

@@ -67,6 +67,11 @@
   margin-bottom: 15px;
 }
 
+.botoes-esp {
+  display: flex;
+  gap: 10px;
+}
+
 .dispositivos-section h3 {
   color: #ff6600;
   margin: 0;
@@ -89,6 +94,26 @@
 }
 
 .add-dispositivo-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.add-esp-real-btn {
+  background: #4CAF50;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.add-esp-real-btn:hover {
+  background: #45a049;
+}
+
+.add-esp-real-btn:disabled {
   background: #ccc;
   cursor: not-allowed;
 }

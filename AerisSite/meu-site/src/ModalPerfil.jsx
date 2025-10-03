@@ -43,6 +43,36 @@ const ModalPerfil = ({ isOpen, onClose }) => {
     setCarregando(false);
   };
 
+  const cadastrarESPReal = async () => {
+    if (!usuario) return;
+    
+    setCarregando(true);
+    try {
+      const response = await fetch('http://localhost:8000/api/cadastrar-esp-real/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          usuario_id: usuario.id_usuario,
+          mac_address: '08:3A:F2:AC:1F:C8'
+        })
+      });
+      
+      if (response.ok) {
+        buscarDispositivos();
+        alert('ESP Real cadastrado com sucesso!');
+      } else {
+        const error = await response.json();
+        alert(error.error || 'Erro ao cadastrar ESP Real');
+      }
+    } catch (error) {
+      console.error('Erro:', error);
+      alert('Erro ao cadastrar ESP Real');
+    }
+    setCarregando(false);
+  };
+
   const deletarESP = async (espId) => {
     if (!confirm('Tem certeza que deseja deletar este ESP? Todos os dados serão perdidos!')) {
       return;
@@ -92,13 +122,22 @@ const ModalPerfil = ({ isOpen, onClose }) => {
           <div className="dispositivos-section">
             <div className="dispositivos-header">
               <h3>Medidores Cadastrados</h3>
-              <button 
-                className="add-dispositivo-btn" 
-                onClick={cadastrarNovoESP}
-                disabled={carregando}
-              >
-                {carregando ? 'Cadastrando...' : '+ Cadastrar ESP'}
-              </button>
+              <div className="botoes-esp">
+                <button 
+                  className="add-dispositivo-btn" 
+                  onClick={cadastrarNovoESP}
+                  disabled={carregando}
+                >
+                  {carregando ? 'Cadastrando...' : '+ ESP Demo'}
+                </button>
+                <button 
+                  className="add-esp-real-btn" 
+                  onClick={cadastrarESPReal}
+                  disabled={carregando}
+                >
+                  {carregando ? 'Cadastrando...' : '+ ESP Real'}
+                </button>
+              </div>
             </div>
             {dispositivos.length > 0 ? (
               <ul className="dispositivos-list">
