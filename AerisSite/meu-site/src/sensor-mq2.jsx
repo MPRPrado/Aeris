@@ -17,6 +17,8 @@ function Graficos01() {
   const [dados, setDados] = useState(dadosIniciais);
   const [relatorio, setRelatorio] = useState('');
   const [filtro, setFiltro] = useState('mensal'); // mensal, semanal, diario
+  const [dispositivo, setDispositivo] = useState('ESP32_MQ2');
+  const [dispositivos, setDispositivos] = useState(['ESP32_MQ2']);
   const [modalPerfilAberto, setModalPerfilAberto] = useState(false);
   const { usuario } = useAuth();
 
@@ -45,7 +47,17 @@ function Graficos01() {
     const buscarDados = async () => {
       try {
         // Buscar todos os dados (sem paginação)
-        const response = await axios.get('http://localhost:8000/api/mq2/?page_size=2000');
+        const response = await axios.get(`http://localhost:8000/api/mq2/?page_size=2000&dispositivo=${dispositivo}`);
+        
+        // Buscar lista de dispositivos disponíveis
+        try {
+          const dispResponse = await axios.get('http://localhost:8000/api/mq2/dispositivos/');
+          if (dispResponse.data.dispositivos) {
+            setDispositivos(dispResponse.data.dispositivos);
+          }
+        } catch (error) {
+          console.log('Erro ao buscar dispositivos:', error);
+        }
         if (!response.data || !response.data.results) {
           console.log('Nenhum dado disponível');
           return;
@@ -123,7 +135,7 @@ function Graficos01() {
 
     buscarDados();
     buscarRelatorio();
-  }, [filtro]); // Recarregar quando filtro mudar
+  }, [filtro, dispositivo]); // Recarregar quando filtro ou dispositivo mudar
 
   return (
     <div className="pagina-sensor">
@@ -149,7 +161,33 @@ function Graficos01() {
       {/* Caixas e conteúdo */}
       <div className="container-duas-caixas-nao-centralizadas">
         <div className="caixa-central-sensor" style={{ position: "relative" }}>
-          {/* Dropdown no cantinho */}
+          {/* Seletor de ESP */}
+          <select 
+            value={dispositivo}
+            onChange={(e) => setDispositivo(e.target.value)}
+            style={{
+              position: "absolute",
+              top: "15px",
+              left: "15px",
+              padding: "8px 12px",
+              borderRadius: "6px",
+              border: "2px solid #ffac75",
+              backgroundColor: "white",
+              cursor: "pointer",
+              fontSize: "12px",
+              fontWeight: "500",
+              color: "#333",
+              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+              outline: "none",
+              zIndex: 10
+            }}
+          >
+            {dispositivos.map(disp => (
+              <option key={disp} value={disp}>{disp}</option>
+            ))}
+          </select>
+          
+          {/* Dropdown de filtro */}
           <select 
             value={filtro}
             onChange={(e) => setFiltro(e.target.value)}

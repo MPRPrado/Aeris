@@ -11,21 +11,35 @@ from .utils import gerar_relatorio
 
 # Mostrar dados no HTML
 def mostrar_dados(request):
-    leituras = DadosSensor_mq135.objects.all().order_by('-id')[:50]  # últimas 50 leituras
+    dispositivo = request.GET.get('dispositivo', 'ESP32_MQ135')
+    
+    # Filtrar por dispositivo e excluir fictícios
+    leituras = DadosSensor_mq135.objects.filter(
+        dispositivo_id=dispositivo
+    ).exclude(
+        dispositivo_id__icontains='ficticio'
+    ).order_by('-id')[:50]
 
     dados_formatados = [
         {
-            'nh3': f"{dado.nh3_ppm:.1f}",
+            'NH3': f"{dado.nh3_ppm:.1f}",
             'disp': dado.dispositivo_id,
             'id': dado.id
         } for dado in leituras
     ]
 
+    # Listar dispositivos disponíveis
+    dispositivos = DadosSensor_mq135.objects.exclude(
+        dispositivo_id__icontains='ficticio'
+    ).values_list('dispositivo_id', flat=True).distinct()
+
     context = {
         'dados': dados_formatados,
-        'total_registros': DadosSensor_mq135.objects.count(),
+        'total_registros': leituras.count(),
+        'dispositivo_atual': dispositivo,
+        'dispositivos': list(dispositivos),
     }
-    return render(request, 'mq135/dadosmq135.html', context)
+    return render(request, 'wifi/dados.html', context)
 
 
 # Mostrar relatório

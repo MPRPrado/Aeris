@@ -11,23 +11,31 @@ from alertas import enviar_alerta_email
 
 # Mostrar dados no HTML
 def mostrar_dados(request):
-    usuario_id = request.GET.get('usuario_id')
-    if usuario_id:
-        leituras = DadosSensor_mq2.objects.filter(usuario_id=usuario_id).order_by('-id')[:50]
-    else:
-        leituras = DadosSensor_mq2.objects.all().order_by('-id')[:50]  # últimas 50 leituras
+    dispositivo = request.GET.get('dispositivo', 'ESP32_MQ2')
+    
+    leituras = DadosSensor_mq2.objects.filter(
+        dispositivo_id=dispositivo
+    ).exclude(
+        dispositivo_id__icontains='ficticio'
+    ).order_by('-id')[:50]
 
     dados_formatados = [
         {
-            'butano': f"{dado.c4h10_ppm:.1f}",  # corrigido
+            'butano': f"{dado.c4h10_ppm:.1f}",
             'disp': dado.dispositivo_id,
             'id': dado.id
         } for dado in leituras
     ]
 
+    dispositivos = DadosSensor_mq2.objects.exclude(
+        dispositivo_id__icontains='ficticio'
+    ).values_list('dispositivo_id', flat=True).distinct()
+
     context = {
         'dados': dados_formatados,
-        'total_registros': DadosSensor_mq2.objects.count(),
+        'total_registros': leituras.count(),
+        'dispositivo_atual': dispositivo,
+        'dispositivos': list(dispositivos),
     }
     return render(request, 'mq2/dadosmq2.html', context)
 
@@ -44,19 +52,40 @@ def relatorio_api(request):
     relatorio = gerar_relatorio(usuario_id)
     return JsonResponse(relatorio)
 
-# API para dados do sensor por usuário
+# API para dados do sensor filtrados por dispositivo
+@csrf_exempt
 def dados_api(request):
-    usuario_id = request.GET.get('usuario_id')
-    if not usuario_id:
-        return JsonResponse({'error': 'usuario_id obrigatório'}, status=400)
+    dispositivo = request.GET.get('dispositivo', 'ESP32_MQ2')
+    page_size = int(request.GET.get('page_size', 100))
     
-    dados = DadosSensor_mq2.objects.filter(usuario_id=usuario_id).order_by('-timestamp')[:100]
+    dados = DadosSensor_mq2.objects.filter(
+        dispositivo_id=dispositivo
+    ).exclude(
+        dispositivo_id__icontains='ficticio'
+    ).order_by('-timestamp')[:page_size]
+    
     dados_json = [{
-        'valor': dado.c4h10_ppm,
+        'c4h10_ppm': dado.c4h10_ppm,
         'timestamp': dado.timestamp.isoformat(),
-        'dispositivo': dado.dispositivo_id
+        'dispositivo_id': dado.dispositivo_id
     } for dado in dados]
     
-    return JsonResponse({'dados': dados_json})
+    return JsonResponse({
+        'results': dados_json,
+        'count': len(dados_json),
+        'dispositivo_filtrado': dispositivo
+    })
+
+
+# API para listar dispositivos disponíveis
+@csrf_exempt
+def dispositivos_api(request):
+    dispositivos = DadosSensor_mq2.objects.exclude(
+        dispositivo_id__icontains='ficticio'
+    ).values_list('dispositivo_id', flat=True).distinct()
+    
+    return JsonResponse({
+        'dispositivos': list(dispositivos)
+    })
 
 
