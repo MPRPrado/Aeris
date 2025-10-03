@@ -6,6 +6,7 @@ const ModalPerfil = ({ isOpen, onClose }) => {
   const { usuario, logout } = useAuth();
   const [dispositivos, setDispositivos] = useState([]);
   const [carregando, setCarregando] = useState(false);
+  const [espSelecionado, setEspSelecionado] = useState(null);
 
   const buscarDispositivos = () => {
     if (usuario) {
@@ -40,6 +41,29 @@ const ModalPerfil = ({ isOpen, onClose }) => {
       alert('Erro ao cadastrar ESP');
     }
     setCarregando(false);
+  };
+
+  const deletarESP = async (espId) => {
+    if (!confirm('Tem certeza que deseja deletar este ESP? Todos os dados serão perdidos!')) {
+      return;
+    }
+    
+    try {
+      const response = await fetch(`http://localhost:8000/api/deletar-esp/${espId}/`, {
+        method: 'DELETE'
+      });
+      
+      if (response.ok) {
+        buscarDispositivos();
+        setEspSelecionado(null);
+        alert('ESP deletado com sucesso!');
+      } else {
+        alert('Erro ao deletar ESP');
+      }
+    } catch (error) {
+      console.error('Erro:', error);
+      alert('Erro ao deletar ESP');
+    }
   };
 
   useEffect(() => {
@@ -79,12 +103,27 @@ const ModalPerfil = ({ isOpen, onClose }) => {
             {dispositivos.length > 0 ? (
               <ul className="dispositivos-list">
                 {dispositivos.map(dispositivo => (
-                  <li key={dispositivo.id} className="dispositivo-item">
-                    <span className="dispositivo-nome">{dispositivo.nome}</span>
-                    <span className={`dispositivo-tipo ${dispositivo.tipo.toLowerCase()}`}>
-                      {dispositivo.tipo === 'REAL' ? 'Real' : 'Demo'}
-                    </span>
-                    <span className="dispositivo-id">{dispositivo.esp_id}</span>
+                  <li 
+                    key={dispositivo.id} 
+                    className={`dispositivo-item ${espSelecionado === dispositivo.id ? 'selecionado' : ''}`}
+                    onClick={() => setEspSelecionado(dispositivo.id)}
+                  >
+                    <div className="dispositivo-info">
+                      <span className="dispositivo-nome">{dispositivo.nome}</span>
+                      <span className={`dispositivo-tipo ${dispositivo.tipo.toLowerCase()}`}>
+                        {dispositivo.tipo === 'REAL' ? 'Real' : 'Demo'}
+                      </span>
+                      <span className="dispositivo-id">{dispositivo.esp_id}</span>
+                    </div>
+                    <button 
+                      className="delete-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deletarESP(dispositivo.id);
+                      }}
+                    >
+                      ×
+                    </button>
                   </li>
                 ))}
               </ul>
@@ -95,6 +134,11 @@ const ModalPerfil = ({ isOpen, onClose }) => {
         </div>
 
         <div className="modal-footer">
+          {espSelecionado && (
+            <div className="esp-selecionado">
+              ESP Selecionado: {dispositivos.find(d => d.id === espSelecionado)?.nome}
+            </div>
+          )}
           <button className="logout-btn" onClick={logout}>
             Sair
           </button>

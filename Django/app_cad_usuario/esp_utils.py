@@ -71,7 +71,6 @@ def cadastrar_esp_real(usuario_id, esp_mac_address):
     try:
         usuario = Usuario.objects.get(id_usuario=usuario_id)
         
-        # Cria ESP real
         esp_real = DispositivoESP.objects.create(
             usuario=usuario,
             esp_id=esp_mac_address,  # Usa MAC como ID

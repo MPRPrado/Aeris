@@ -4,6 +4,7 @@ import './App.css';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from './AuthContext';
+import ModalPerfil from './ModalPerfil';
 import axios from 'axios';
 
 // Estado inicial como array vazio
@@ -16,6 +17,7 @@ function Graficos01() {
   const [dados, setDados] = useState(dadosIniciais);
   const [relatorio, setRelatorio] = useState('');
   const [filtro, setFiltro] = useState('mensal'); // mensal, semanal, diario
+  const [modalPerfilAberto, setModalPerfilAberto] = useState(false);
   const { usuario } = useAuth();
 
   useEffect(() => {
@@ -138,7 +140,7 @@ function Graficos01() {
           </span>
         </div>
         {/* Usuário - Modificação aqui */}
-        <div className="usuarioContainer">
+        <div className="usuarioContainer" onClick={() => setModalPerfilAberto(true)} style={{ cursor: 'pointer' }}>
           <span style={{ color: "#ff6600" }}>{usuario.nome}</span>
           <img src="/user (1) 1.png" alt="Ícone Usuário" />
         </div>
@@ -268,6 +270,12 @@ function Graficos01() {
           Voltar para a página inicial
         </span>
       </div>
+
+      {/* Modal de Perfil */}
+      <ModalPerfil 
+        isOpen={modalPerfilAberto} 
+        onClose={() => setModalPerfilAberto(false)} 
+      />
     </div>
   );
 }

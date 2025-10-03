@@ -162,3 +162,22 @@ class CadastrarESPAPI(APIView):
         else:
             return Response({'error': 'Erro ao criar ESP ou limite atingido'}, status=status.HTTP_400_BAD_REQUEST)
 
+class DeletarESPAPI(APIView):
+    def delete(self, request, esp_id):
+        """Deletar ESP do usuário"""
+        try:
+            dispositivo = DispositivoESP.objects.get(id=esp_id)
+            
+            # Deletar todos os dados do sensor
+            DadosSensor_mq2.objects.filter(dispositivo_id=dispositivo.esp_id).delete()
+            DadosSensor_mq7.objects.filter(dispositivo_id=dispositivo.esp_id).delete()
+            DadosSensor_mq135.objects.filter(dispositivo_id=dispositivo.esp_id).delete()
+            
+            # Deletar o dispositivo
+            dispositivo.delete()
+            
+            return Response({'success': True, 'message': 'ESP deletado com sucesso'})
+            
+        except DispositivoESP.DoesNotExist:
+            return Response({'error': 'ESP não encontrado'}, status=status.HTTP_404_NOT_FOUND)
+

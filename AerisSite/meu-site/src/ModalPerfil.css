@@ -113,6 +113,26 @@
   border-radius: 5px;
   margin-bottom: 8px;
   background: #f9f9f9;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.dispositivo-item:hover {
+  background: #f0f0f0;
+  border-color: #ddd;
+}
+
+.dispositivo-item.selecionado {
+  background: #e8f4fd;
+  border-color: #2196F3;
+  box-shadow: 0 0 5px rgba(33, 150, 243, 0.3);
+}
+
+.dispositivo-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex: 1;
 }
 
 .dispositivo-nome {
@@ -170,4 +190,31 @@
 
 .logout-btn:hover {
   background: #cc0000;
+}
+
+.delete-btn {
+  background: #ff4444;
+  color: white;
+  border: none;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 10px;
+}
+
+.delete-btn:hover {
+  background: #cc0000;
+}
+
+.esp-selecionado {
+  color: #2196F3;
+  font-weight: bold;
+  font-size: 14px;
+  margin-right: 20px;
 }
