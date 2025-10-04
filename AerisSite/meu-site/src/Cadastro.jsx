@@ -15,6 +15,8 @@ function Cadastro() {
 
   const navigate = useNavigate();
 
+  const [mostrarPopup, setMostrarPopup] = useState(false);
+
   return (
     <div className={`cadastro-container ${telaAtual === 'cadastro' ? 'tela-cadastro' : ''}`}>
         {telaAtual === 'login' && (
@@ -46,13 +48,28 @@ function Cadastro() {
               <button className="mostrar-senha">Mostrar</button>
             </div>
             
-            <span className="esqueceu-senha">Esqueceu sua senha?</span>
+            <button className="esqueceu-senha" type="button" onClick={() => setMostrarPopup(true)}>
+              Esqueceu sua senha?
+            </button>
             
             <button className="botao-entrar" type="button" onClick={() => navigate('/TelaPrincipal')}>
               Entrar
               </button>
             </div>
           </>
+        )}
+
+        
+        {mostrarPopup && (
+          <div className="popup-overlay">
+            <div className="popup-content">
+              <h2 className="titulo-popup">Redefinir Senha</h2>
+              <input type="password" className="input-popup" placeholder="Nova senha" />
+              <input type="password" className="input-popup" placeholder="Confirmar nova senha" />
+              <button className="botao-confirmar" onClick={() => setMostrarPopup(false)}>Confirmar</button>
+              <button className="botao-cancelar" onClick={() => setMostrarPopup(false)}>Cancelar</button>
+            </div>
+          </div>
         )}
         
         {telaAtual === 'cadastro' && (
