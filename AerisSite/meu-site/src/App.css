@@ -7,11 +7,17 @@ body {
 #root {
   background: #fff;
   width: 100vw;
-  min-height: 100vh;
+  max-width: 100%;
   margin: 0;
   padding: 0;
   text-align: center;
   box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 100vh;
 }
 
 /*========================== Logo ==========================*/
@@ -135,14 +141,11 @@ body {
   align-items: center;
   justify-content: flex-start;
   padding-bottom: 32px;
-
-  transform: scale(1.1); /* aumenta 10% */
-  transform-origin: top left; /* mantém fixo no canto */
 }
 
 /* Nova logo no canto superior esquerdo */
 .logoErisPequena {
-  font-size: 4em; /* maior que antes */
+  font-size: 3em;
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -181,21 +184,21 @@ body {
 
 .frasePequena {
   position: fixed;
-  top: 120px;   /* mais abaixo da logo */
-  left: 65px;  /* mais à direita da logo */
-  font-size: 3em;
+  top: 100px;
+  left: 65px;
+  font-size: 2em;
   color: #000000;
   z-index: 999;
 }
 
 .usuarioContainer {
   position: fixed;
-  top: 20px; /* mesma altura da logo */
+  top: 15px;
   right: 200px;
   display: flex;
   align-items: center;
   gap: 0.5em;
-  font-size: 3em;
+  font-size: 2em;
   color: #000;
   z-index: 1000;
 }
@@ -208,13 +211,13 @@ body {
 
 .fraseSensoresConectados {
   position: fixed;
-  top: 180px;
+  top: 140px;
   left: 65px;
-  right: 40px; /* pra linha ir até perto da borda direita */
+  right: 40px;
   display: flex;
   align-items: center;
   gap: 1em;
-  font-size: 2em;
+  font-size:1.5em;
   color: #000000;
   z-index: 999;
 }
@@ -231,23 +234,23 @@ body {
 
 .fraseVejaRelatorios {
   position: fixed;
-  top: 220px; /* um pouco abaixo da frase de sensores */
+  top: 180px;
   left: 65px;
-  font-size: 1.4em;
+  font-size: 1.2em;
   color: #8a8a8a;
   z-index: 999;
 }
 
 /* Container vertical que segura os sensores */
 .sensoresContainer {
-  position: fixed;  /* mantém no lugar */
-  top: 300px;
+  position: fixed;
+  top: 220px;
   left: 65px;
   display: flex;
-  flex-direction: column; /* empilha verticalmente */
-  gap: 60px; /* espaçamento entre sensores */
+  flex-direction: column;
+  gap: 30px;
   z-index: 999;
-  font-size: 1.8em;
+  font-size: 1em;
 }
 
 
@@ -303,14 +306,14 @@ body {
 
 .mensagemFixa {
   position: fixed;
-  top: 270px;
-  left: 35em;
-  width: 800px;
+  top: 200px;
+  left: 800px;
+  width: 500px;
   background-color: #f9f5f5;
-  padding: 40px;
+  padding: 20px;
   border-radius: 8px;
   color: #333;
-  font-size: 1.5em;
+  font-size: 1em;
   line-height: 1.5;
   box-shadow: 0 0 10px rgba(0,0,0,0.1);
   z-index: 999;
@@ -318,15 +321,15 @@ body {
 
 .suporteContainer {
   position: fixed;
-  top: 630px; /* Distância do topo da tela */
-  left: 64em; /* Distância da esquerda da tela */
-  width: 500px; /* Largura do bloco */
+  top: 400px;
+  left: 820px;
+  width: 500px;
   text-align: center;
   z-index: 999;
 }
 
 .textoSuporte {
-  font-size: 1.3em;
+  font-size: 1em;
   margin-bottom: 10px;
   color: #333;
 }
@@ -337,7 +340,7 @@ body {
   border: none;
   padding: 10px 20px;
   border-radius: 8px;
-  font-size: 21px;
+  font-size: 1em;
   cursor: pointer;
   transition: background-color 0.3s;
 }
