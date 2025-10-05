@@ -1,33 +1,34 @@
 body {
   background: #fff;
+  margin: 0;
+  padding: 0;
 }
 
 #root {
   background: #fff;
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start; /* topo */
+  width: 100vw;
   min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  box-sizing: border-box;
 }
 
-.logoEris {
-  font-size: 4em;
+/*========================== Logo ==========================*/
+
+/*.logoEris {
+  font-size: 6em;
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  gap: 0.05em; /* Diminua o gap para aproximar a imagem do texto */
-  margin-left: 50px; /* empurra tudo para a direita */
+  gap: 0.05em; 
+  margin-left: 60px; 
+  margin-top: -50px;
 }
 
 
 .logo-eris-palavra {
-  font-size: 1em;      /* herda o tamanho do .logoEris (4em) */
+  font-size: 1em;      
   font-weight: bold;
   color: #000;
   display: flex;
@@ -37,9 +38,9 @@ body {
 .upside-down-v {
   display: inline-block;
   transform: rotate(180deg);
-  margin-right: -0.08em; /* Valor negativo para aproximar o "eris" do V */
+  margin-right: -0.08em; 
   position: relative;
-  top: 0.10em; /* Mantém o V na mesma posição vertical */
+  top: 0.10em; 
   color: #000;
 }
 
@@ -47,135 +48,47 @@ body {
   width: 1.5em;
   height: 1.5em;
   object-fit: contain;
-  margin: 0;         /* Certifique-se que não há margin */
+  margin: 0;        
   padding: 0;
-}
+}*/
+
+/*========================== Acima é a log0 ==========================*/
 
 .sub-frase {
-  font-size: 1.5em;
-  margin-top: 0; /* Totalmente próximo da logo */
+  font-size: 2.2em;
+  margin-top: -30px; /* Totalmente próximo da logo */
   color: #000;
 }
 
 .sub-sub-frase {
-  font-size: 1em;
-  margin-top: -2em; /* Totalmente próximo da logo */
+  font-size: 3em;
+  margin-top: -1.5em; /* Totalmente próximo da logo */
   color: #8a8a8a;
-}
-
-.input-wrapper {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  position: relative;
-}
-
-.input-icon {
-  width: 1.3em;
-  height: 1.3em;
-  margin-right: 0.5em;
-  opacity: 0.7;
-  position: absolute;
-  left: 18px;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 2;
-}
-
-.input-Escrita {
-  font-size: 1em;
-  padding: 0.5em 1em 0.5em 3em; /* padding-left maior para o ícone */
-  padding-top: 1em;
-  padding-bottom: 1em;
-  margin-top: 0;
-  border: 1px solid #8a8a8a;
-  border-radius: 0.5em;
-  outline: none;
-  color: #8a8a8a;
-  background: #f3f3f3;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-/* Estilo para o botão de mostrar senha */
-.mostrar-senha {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  color: #8a8a8a;
-  cursor: pointer;
-  font-size: 0.9em;
-  padding: 5px 10px;
-  border-radius: 4px;
-  transition: background-color 0.2s;
-}
-
-.mostrar-senha:hover {
-  background-color: #e0e0e0;
-}
-
-/* Ajuste para o input de senha com botão */
-.input-wrapper {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  position: relative;
-}
-
-.input-wrapper .input-Escrita {
-  padding-right: 80px; /* Espaço para o botão */
-}
-
-/* Cor do placeholder igual à borda */
-.input-Escrita::placeholder {
-  color: #8a8a8a;
-  opacity: 1;
 }
 
 .form-container {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  width: 500px;      /* aumente este valor para deixar mais larga */
+  width: 700px;      /* aumente este valor para deixar mais larga */
   max-width: 100%;
-  margin-top: 0;
+  margin-top: 1.5em;
 }
 
 .texto-acima {
-  font-size: 1.1em;
-  margin: 0 0 0.2em 0;
+  font-size: 1.6em;
+  margin: 0 0 0.3em 0;
   color: #8a8a8a;
   text-align: left;
   width: 100%;      /* Alinha com a caixa de texto */
   padding-left: 0;
 }
 
-.botao-criar-conta {
-  width: 400px;
-  padding: 0.8em 0;
-  background: #FC991A;
-  color: #fff;
-  border: none;
-  border-radius: 0.5em;
-  font-size: 1.2em;
-  cursor: pointer;
-  margin: 0 auto;
-  display: block;
-  transition: background 0.2s;
-}
-
-.botao-criar-conta:hover {
-  background: #FC991A;
-}
-
 .botao-link {
   background: none;
   border: none;
   color: #FC991A;
-  font-size: 1em;
+  font-size: 1.4em;
   text-decoration: underline;
   cursor: pointer;
   margin-top: 1em;
@@ -222,11 +135,14 @@ body {
   align-items: center;
   justify-content: flex-start;
   padding-bottom: 32px;
+
+  transform: scale(1.1); /* aumenta 10% */
+  transform-origin: top left; /* mantém fixo no canto */
 }
 
 /* Nova logo no canto superior esquerdo */
 .logoErisPequena {
-  font-size: 2em; /* maior que antes */
+  font-size: 4em; /* maior que antes */
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -259,27 +175,27 @@ body {
   transform: rotate(180deg);
   margin-right: -0.08em;
   position: relative;
-  top: 0.05em;
+  top: 0.1em;
   color: #000;
 }
 
 .frasePequena {
   position: fixed;
-  top: 100px;   /* mais abaixo da logo */
+  top: 120px;   /* mais abaixo da logo */
   left: 65px;  /* mais à direita da logo */
-  font-size: 2em;
+  font-size: 3em;
   color: #000000;
   z-index: 999;
 }
 
 .usuarioContainer {
   position: fixed;
-  top: 15px; /* mesma altura da logo */
-  right: 15px;
+  top: 20px; /* mesma altura da logo */
+  right: 200px;
   display: flex;
   align-items: center;
   gap: 0.5em;
-  font-size: 1.5em; /* mesmo tamanho da logo */
+  font-size: 3em;
   color: #000;
   z-index: 1000;
 }
@@ -292,13 +208,13 @@ body {
 
 .fraseSensoresConectados {
   position: fixed;
-  top: 165px;
+  top: 180px;
   left: 65px;
   right: 40px; /* pra linha ir até perto da borda direita */
   display: flex;
   align-items: center;
   gap: 1em;
-  font-size: 1.2em;
+  font-size: 2em;
   color: #000000;
   z-index: 999;
 }
@@ -306,18 +222,18 @@ body {
 /* Linha que vai esticar ao lado do texto */
 .fraseSensoresConectados .linha-horizontal {
   flex-grow: 1;          /* linha ocupa o resto do espaço */
-  height: 1.5px;           /* espessura da linha */
+  height: 2px;           /* espessura da linha */
   background-color: #000000; /* cor da linha igual ao texto */
   border-radius: 1px;
   position: relative;
-  top: 0.1em; /* ajusta verticalmente a linha */
+  top: 0.15em; /* ajusta verticalmente a linha */
 }
 
 .fraseVejaRelatorios {
   position: fixed;
-  top: 190px; /* um pouco abaixo da frase de sensores */
+  top: 220px; /* um pouco abaixo da frase de sensores */
   left: 65px;
-  font-size: 1em;
+  font-size: 1.4em;
   color: #8a8a8a;
   z-index: 999;
 }
@@ -325,12 +241,13 @@ body {
 /* Container vertical que segura os sensores */
 .sensoresContainer {
   position: fixed;  /* mantém no lugar */
-  top: 255px;
+  top: 300px;
   left: 65px;
   display: flex;
   flex-direction: column; /* empilha verticalmente */
-  gap: 40px; /* espaçamento entre sensores */
+  gap: 60px; /* espaçamento entre sensores */
   z-index: 999;
+  font-size: 1.8em;
 }
 
 
@@ -363,6 +280,7 @@ body {
   font-size: 1em;
   color: #000;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .textoCirculo:hover {
@@ -377,22 +295,22 @@ body {
 }
 
 .linhaAbaixoTextoMenor {
-  height: 1px;
+  height: 0.009em;
   background-color: #000000;
-  width: 100%;  /* ok */
+  width: 130%;  /* ok */
   margin-top: 10px;
 }
 
 .mensagemFixa {
   position: fixed;
-  top: 225px;
-  left: 700px;
-  width: 500px;
-  background-color: #ffac75;
-  padding: 20px;
+  top: 270px;
+  left: 35em;
+  width: 800px;
+  background-color: #f9f5f5;
+  padding: 40px;
   border-radius: 8px;
   color: #333;
-  font-size: 1.1em;
+  font-size: 1.5em;
   line-height: 1.5;
   box-shadow: 0 0 10px rgba(0,0,0,0.1);
   z-index: 999;
@@ -400,15 +318,15 @@ body {
 
 .suporteContainer {
   position: fixed;
-  top: 500px; /* Distância do topo da tela */
-  left: 716px; /* Distância da esquerda da tela */
+  top: 630px; /* Distância do topo da tela */
+  left: 64em; /* Distância da esquerda da tela */
   width: 500px; /* Largura do bloco */
   text-align: center;
   z-index: 999;
 }
 
 .textoSuporte {
-  font-size: 16px;
+  font-size: 1.3em;
   margin-bottom: 10px;
   color: #333;
 }
@@ -419,7 +337,7 @@ body {
   border: none;
   padding: 10px 20px;
   border-radius: 8px;
-  font-size: 16px;
+  font-size: 21px;
   cursor: pointer;
   transition: background-color 0.3s;
 }
@@ -437,14 +355,14 @@ body {
   border-radius: 16px;
   box-shadow: 0 4px 24px rgba(0,0,0,0.18);
   padding: 48px 40px;
-  min-width: 800px;
+  min-width: 1100px;
   min-height: 420px;
   display: flex;
   flex-direction: column; /* Adicione esta linha */
   align-items: flex-start; /* Para alinhar à esquerda */
   justify-content: flex-start;
   border: 2.5px solid #e3e3e3;
-  margin-left: -20px; /* ajuste o valor negativo conforme desejar */
+  margin-left: -23em; /* ajuste o valor negativo conforme desejar */
   min-height: 700px;
 }
 
@@ -491,8 +409,8 @@ body {
   border-radius: 16px;
   box-shadow: 0 4px 24px rgba(0,0,0,0.18);
   padding: 48px 24px;
-  min-width: 280px;
-  min-height: 560px;
+  min-width: 670px;
+  min-height: 736px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -517,7 +435,7 @@ body {
 .frase-topo-caixa-maior {
   width: 100%;
   text-align: left;
-  font-size: 1.1em;
+  font-size: 1.5em;
   font-weight: 500;
   color: #333;
   margin-bottom: 12px;
@@ -530,12 +448,12 @@ body {
 .frases-abaixo-grafico {
   margin-top: 80px;
   display: flex;
-  flex-direction: column;   /* <-- muda para coluna */
+  flex-direction: column;   /* &lt;-- muda para coluna */
   justify-content: flex-start;
   align-items: flex-start;  /* ou center, se quiser centralizar */
   gap: 8px;                 /* espaço entre as frases */
   color: #444;
-  font-size: 1em;
+  font-size: 1.5em;
   line-height: 1.6;
 }
 
@@ -555,17 +473,17 @@ body {
 }
 
 .frase-relatorio {
-  font-size: 1.1em;
+  font-size: 2.3em;
   color: #000000;
   text-align: center;
   font-weight: 500;
   line-height: 1.5;
   margin-top: -21px;
-  margin-left: -200px;
+  margin-left: 0px;
 }
 
 .frase-relatorio-menor {
-  font-size: 0.95em;
+  font-size: 1.4em;
   color: #666;
   text-align: center;
   font-weight: 400;
@@ -573,7 +491,7 @@ body {
 }
 
 .frase-previsao-menor {
-  font-size: 0.95em;
+  font-size: 1.4em;
   color: #666;
   text-align: center;
   font-weight: 400;
@@ -588,11 +506,697 @@ body {
   text-decoration: underline;
   transition: color 0.2s;
   outline: none;
-  margin-left: -1000px;;
-  margin-top: 400px;
 }
 .voltar-inicio-link:hover,
 .voltar-inicio-link:focus {
   color: #e86f1e;
   text-decoration: underline;
+}
+
+/*======================================== Cadastro =======================================*/
+
+.cadastro-container {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  overflow: hidden;
+}
+
+.cadastro-container #root {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.caixa-laranja-cadastro {
+  width: 46vw;
+  height: 100vh;
+  background: linear-gradient(45deg, #FC991A, #FF6B35);
+  border-radius: 16em 0 0 16em; /*Canto superior esquerdo, direito, canto inferior direito, esuquerdo*/
+  margin-left: auto;
+}
+
+.mensagem-entrar {
+  font-size: 1.4em;
+  color: #000000;
+  text-align: top;
+  justify-content: center;
+  align-items: center;
+  margin-left: 3em;
+  margin-top: -4em;
+  font-weight: bold;
+  font-family: Arial, sans-serif;
+}
+.mensagem-usar-email {
+  font-size: 1.5em;
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  color: #333;
+  text-align: center;
+  margin-left: 2em;
+  margin-top: -1em;
+  font-family: Arial, sans-serif;
+}
+.mensagens-container {
+  display: grid;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0em;
+  margin-left: -60em;
+  margin-top: 8em;
+}
+
+
+.logo-Eris {
+  font-size: 7em;
+  display: flex;
+  align-items: center;
+  gap: 0.05em; /* Diminua o gap para aproximar a imagem do texto */
+  margin-top: -2em;
+  margin-left: 1.4em;
+}
+.logo-Eris-Palavra {
+  font-size: 1em;      /* herda o tamanho do .logoEris (4em) */
+  font-weight: bold;
+  color: #000;
+  display: flex;
+  align-items: center;
+  top: 0em;
+}
+.v-virado {
+  display: inline-block;
+  transform: rotate(180deg);
+  margin-right: -0.08em; /* Valor negativo para aproximar o &quot;eris&quot; do V */
+  position: relative;
+  top: 0.13em; /* Mantém o V na mesma posição vertical */
+  color: #000;
+}
+.logo-imagem {
+  width: 1.5em;
+  height: 1.5em;
+  object-fit: contain;
+  margin: 0;         /* Certifique-se que não há margin */
+  padding: 0;
+}
+
+
+.input-wrapper1 {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  position: relative;
+  margin-top: -1em;
+  margin-left: 2em;
+}
+.input-wrapper2 {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  position: relative;
+  margin-top: 3em;
+  margin-left: 2em;
+}
+
+.input-icon {
+  width: 2.1em;
+  height: 2.1em;
+  margin-right: 0.5em;
+  opacity: 0.7;
+  position: absolute;
+  left: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+}
+.input-Escrita {
+  font-size: 1.4em;
+  padding: 0.7em 1.2em 0.7em 3.5em; /* padding-left maior para o ícone */
+  padding-top: 1.2em;
+  padding-bottom: 1.2em;
+  margin-top: 0;
+  border: 2px solid #8a8a8a;
+  border-radius: 1.7em;
+  outline: none;
+  color: #8a8a8a;
+  background: #f3f3f3;
+  width: 100%;
+  box-sizing: border-box;
+}
+/* Estilo para o botão de mostrar senha */
+.mostrar-senha {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #8a8a8a;
+  cursor: pointer;
+  font-size: 1.2em;
+  padding: 8px 15px;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+}
+.mostrar-senha:hover {
+  background-color: #d7d5d5;
+}
+/* Ajuste para o input de senha com botão */
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  position: relative;
+}
+.input-wrapper .input-Escrita {
+  padding-right: 120px; /* Espaço para o botão */
+}
+/* Cor do placeholder igual à borda */
+.input-Escrita::placeholder {
+  color: #8a8a8a;
+  opacity: 1;
+}
+
+
+.botao-entrar {
+  width: 460px;
+  padding: 1em 4em;
+  background: #FC991A;
+  color: #fff;
+  border: none;
+  border-radius: 1.7em;
+  font-size: 1.6em;
+  cursor: pointer;
+  display: block;
+  transition: background 0.2s;
+  margin-top: 1.3em;
+  margin-left: 5.7em;
+}
+.botao-entrar:hover {
+  background: #d88212;
+}
+.botao-entrar:active {
+  background: #a96006;
+}
+.mostrar-senha:active {
+  background-color: #c0c0c0;
+}
+
+.titulo-bem-vindo {
+  color: white;
+  font-size: 5em;
+  text-align: center;
+  margin-top: 2em;
+  padding: 2em;
+}
+.subtitulo-cadastro {
+  color: white;
+  font-size: 2em;
+  text-align: center;
+  margin-top: -5em;
+  padding: 0 2em;
+}
+.botao-criar-conta {
+  background: transparent;
+  color: white;
+  border: 2px solid white;
+  padding: 1em 4em;
+  border-radius: 1.7em;
+  font-size: 1.4em;
+  cursor: pointer;
+  margin: 2em auto;
+  display: block;
+  margin-left: 14.5em;
+}
+.botao-criar-conta:active {
+  background: white;
+  color: #FC991A;
+}
+
+
+.caixa-laranja-esquerda {
+  width: 46vw;
+  height: 100vh;
+  background: linear-gradient(45deg, #FC991A, #FF6B35);
+  border-radius: 0 16em 16em 0;
+  margin-right: auto;
+}
+.caixa-laranja-cadastro, .caixa-laranja-esquerda {
+  transition: all 0.8s ease-in-out;
+}
+
+.cadastro-container {
+  transition: all 0.8s ease-in-out;
+}
+.caixa-laranja {
+  width: 46vw;
+  height: 100vh;
+  background: linear-gradient(45deg, #FC991A, #FF6B35);
+  position: fixed;
+  top: 0;
+  transition: all 0.8s ease-in-out;
+}
+
+.caixa-laranja.direita {
+  right: 0;
+  border-radius: 16em 0 0 16em;
+  transform: translateX(0);
+}
+
+.caixa-laranja.esquerda {
+  right: 0;
+  border-radius: 0 16em 16em 0;
+  transform: translateX(-54vw);
+}
+
+
+.botao-cadastrar {
+  width: 460px;
+  padding: 1em 4em;
+  background: #FC991A;
+  color: #fff;
+  border: none;
+  border-radius: 1.7em;
+  font-size: 1.6em;
+  cursor: pointer;
+  display: block;
+  transition: background 0.2s;
+  margin-top: 1.3em;
+  margin-left: 70em;
+}
+.botao-cadastrar:hover {
+  background: #FC991A;
+}
+.botao-cadastrar:active {
+  background: #e6850f;
+}
+
+
+.logo-Cadastro {
+  font-size: 7em;
+  display: flex;
+  align-items: center;
+  gap: 0.05em;
+  margin-top: -0.5em;
+  margin-left: 8em;
+}
+.logo-Cadastro-Palavra {
+  font-size: 1em;
+  font-weight: bold;
+  color: #000;
+  display: flex;
+  align-items: center;
+}
+.v-virado-cadastro {
+  display: inline-block;
+  transform: rotate(180deg);
+  margin-right: -0.08em;
+  position: relative;
+  top: 0.13em;
+  color: #000;
+}
+.logo-imagem-cadastro{
+  width: 1.5em;
+  height: 1.5em;
+  object-fit: contain;
+  margin: 0;
+  padding: 0;
+}
+
+.botao-cadastrar {
+  width: 460px;
+  padding: 1em 4em;
+  background: #FC991A;
+  color: #fff;
+  border: none;
+  border-radius: 1.7em;
+  font-size: 1.6em;
+  cursor: pointer;
+  display: block;
+  transition: background 0.2s;
+  margin-top: 1.3em;
+  margin-left: 70em;
+}
+
+.botao-cadastrar:hover {
+  background: #FC991A;
+}
+
+.botao-cadastrar:active {
+  background: #e6850f;
+}
+
+
+.mensagem-cadastrar {
+  font-size: 1.4em;
+  color: #000000;
+  text-align: top;
+  justify-content: center;
+  align-items: center;
+  margin-left: 39em;
+  margin-top: -3em;
+  font-weight: bold;
+  font-family: Arial, sans-serif;
+}
+.mensagem-usar-email-cadastro {
+  font-size: 1.5em;
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  color: #333;
+  text-align: center;
+  margin-left: 36em;
+  margin-top: -1em;
+  font-family: Arial, sans-serif;
+}
+
+.mensagens-cadastro-container {
+  position: static;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1em;
+  margin-left: 0em;
+  margin-top: 0em;
+  margin: 2em 0;
+}
+.container-cadastro {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.conteudo-cadastro {
+  margin-top: 10em;
+}
+
+.input-wrapper3 {
+  display: flex;
+  align-items: center;
+  width: 50%;
+  position: relative;
+  margin-top: -1em;
+  margin-left: 50em;
+}
+.input-wrapper4 {
+  display: flex;
+  align-items: center;
+  width: 50%;
+  position: relative;
+  margin-top: 2em;
+  margin-left: 50em;
+}
+.input-wrapper5 {
+  display: flex;
+  align-items: center;
+  width: 50%;
+  position: relative;
+  margin-top: 2em;
+  margin-left: 50em;
+}
+
+.botao-entrar-cadastro {
+  width: 460px;
+  padding: 1em 4em;
+  background: #FC991A;
+  color: #fff;
+  border: none;
+  border-radius: 1.7em;
+  font-size: 1.6em;
+  cursor: pointer;
+  display: block;
+  transition: background 0.2s;
+  margin-top: 1.3em;
+  margin-left: 35em;
+}
+.botao-entrar-cadastro:hover {
+  background: #FC991A;
+}
+.botao-entrar-cadastro:active {
+  background: #e6850f;
+}
+
+.esqueceu-senha {
+  color: #FC991A;
+  font-size: 1.5em;
+  cursor: pointer;
+  text-decoration: underline;
+  margin-top: 1em;
+  margin-left: 2em;
+  transition: color 0.2s;
+  background: transparent;
+  outline: none;
+  border: none;
+}
+.esqueceu-senha:active {
+  color: #a85c07;
+  outline: none;
+  border: none;
+}
+.esqueceu-senha:focus{
+  outline: none;
+  border: none;
+}
+.mensagens-container {
+  transition: all 0.8s ease-in-out;
+}
+
+.logo-Eris, .logo-Cadastro {
+  transition: all 0.8s ease-in-out;
+}
+
+.mensagem-entrar, .mensagem-cadastrar {
+  transition: all 0.8s ease-in-out;
+}
+
+.input-wrapper1, .input-wrapper2, .input-wrapper3, .input-wrapper4, .input-wrapper5 {
+  transition: all 0.8s ease-in-out;
+}
+
+
+/* Elementos da tela de login - saem pela direita */
+.mensagens-container {
+  transition: transform 0.8s ease-in-out;
+}
+
+/* Quando vai para cadastro, elementos de login saem pela direita */
+.tela-cadastro .mensagens-container {
+  transform: translateX(100vw);
+}
+
+/* Elementos da tela de cadastro - entram pela esquerda */
+.container-cadastro {
+  transition: transform 0.8s ease-in-out;
+  transform: translateX(-100vw);
+}
+
+/* Quando está na tela de cadastro, elementos entram */
+.tela-cadastro .container-cadastro {
+  transform: translateX(0);
+}
+.input-icon {
+  transition: transform 0.8s ease-in-out;
+}
+
+.container-cadastro .input-icon {
+  transform: translateX(-100vw);
+}
+
+.tela-cadastro .container-cadastro .input-icon {
+  transform: translateX(0);
+}
+
+
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.popup-content {
+  background: white;
+  padding: 3em;
+  border-radius: 12px;
+  border: 2px solid #e0e0e0;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  width: 400px;
+}
+
+
+.botao-confirmar {
+  background: #FC991A;
+  color: #fff;
+  border: none;
+  padding: 1em 2em;
+  border-radius: 1.7em;
+  font-size: 1.4em;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.botao-confirmar:hover {
+  background: #e6850f;
+}
+
+.botao-cancelar {
+  background: transparent;
+  color: #8a8a8a;
+  border: 2px solid #8a8a8a;
+  padding: 1em 2em;
+  border-radius: 1.7em;
+  font-size: 1.4em;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.botao-cancelar:hover {
+  background: #8a8a8a;
+  color: white;
+}
+
+.input-popup {
+  font-size: 1.4em;
+  padding: 1em 1.2em;
+  border: 2px solid #8a8a8a;
+  border-radius: 1.7em;
+  outline: none;
+  color: #8a8a8a;
+  background: #f3f3f3;
+  width: 100%;
+  box-sizing: border-box;
+}
+.input-popup::placeholder {
+  color: #8a8a8a;
+  opacity: 1;
+}
+
+
+.titulo-popup {
+  color: #000;
+}
+
+/* ====================== RESPONSIVIDADE ====================== */
+
+/* Tablets */
+@media (max-width: 1024px) {
+  .cadastro-container {
+    flex-direction: column;
+  }
+  
+  .caixa-laranja {
+    width: 100vw;
+    height: 30vh;
+    position: relative;
+    border-radius: 0;
+    transform: none !important;
+  }
+  
+  .mensagens-container {
+    margin: 2em auto;
+    width: 90%;
+    max-width: 500px;
+  }
+  
+  .container-cadastro {
+    width: 90%;
+    max-width: 500px;
+    margin: 2em auto;
+    position: relative;
+  }
+  
+  .input-wrapper1, .input-wrapper2, .input-wrapper3, .input-wrapper4, .input-wrapper5 {
+    margin-left: 0;
+    width: 100%;
+  }
+  
+  .botao-entrar, .botao-entrar-cadastro {
+    width: 100%;
+    margin-left: 0;
+  }
+  
+  .logo-Eris, .logo-Cadastro {
+    font-size: 4em;
+    margin-left: 0;
+    justify-content: center;
+  }
+  
+  .mensagem-cadastrar, .mensagem-usar-email-cadastro {
+    margin-left: 0;
+    text-align: center;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  #root {
+    padding: 1rem;
+  }
+  
+  .logo-Eris, .logo-Cadastro {
+    font-size: 3em;
+  }
+  
+  .titulo-bem-vindo {
+    font-size: 3em;
+    padding: 1em;
+  }
+  
+  .subtitulo-cadastro {
+    font-size: 1.5em;
+  }
+  
+  .botao-criar-conta {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .input-Escrita {
+    font-size: 1.2em;
+    padding: 0.8em 1em 0.8em 3em;
+  }
+  
+  .botao-entrar, .botao-entrar-cadastro {
+    font-size: 1.4em;
+    padding: 0.8em 2em;
+  }
+}
+
+/* Mobile pequeno */
+@media (max-width: 480px) {
+  .logo-Eris, .logo-Cadastro {
+    font-size: 2.5em;
+  }
+  
+  .titulo-bem-vindo {
+    font-size: 2.5em;
+  }
+  
+  .mensagem-entrar h1, .mensagem-cadastrar h1 {
+    font-size: 1.5em;
+  }
+  
+  .mensagem-usar-email h2, .mensagem-usar-email-cadastro h2 {
+    font-size: 1.2em;
+  }
 }

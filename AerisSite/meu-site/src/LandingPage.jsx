@@ -104,7 +104,7 @@ function LandingPage() {
             <a href="#produto" className="navbar-link" onClick={(e) => { e.preventDefault(); smoothScrollTo('produto'); }}>Produto</a>
             <a href="#validacao" className="navbar-link" onClick={(e) => { e.preventDefault(); smoothScrollTo('validacao'); }}>Validação</a>
             <a href="#sobre-nos" className="navbar-link" onClick={(e) => { e.preventDefault(); smoothScrollTo('sobre-nos'); }}>Sobre Nós</a>
-            <button className="navbar-button" onClick={() => navigate('/criar-conta')}>Acessar plataforma</button>
+            <button className="navbar-button" onClick={() => navigate('/cadastro')}>Acessar plataforma</button>
           </div>
         </div>
       </nav>

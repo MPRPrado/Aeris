@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 import { useESP } from './ESPContext';
 import './ModalPerfil.css';
 
 const ModalPerfil = ({ isOpen, onClose }) => {
+  const navigate = useNavigate();
   const { usuario, logout } = useAuth();
   const { espSelecionado, selecionarESP } = useESP();
   const [dispositivos, setDispositivos] = useState([]);
@@ -182,7 +184,11 @@ const ModalPerfil = ({ isOpen, onClose }) => {
               ESP Selecionado: {espSelecionado.nome}
             </div>
           )}
-          <button className="logout-btn" onClick={logout}>
+          <button className="logout-btn" onClick={() => { 
+            logout(); 
+            onClose();
+            navigate('/cadastro');
+          }}>
             Sair
           </button>
         </div>
