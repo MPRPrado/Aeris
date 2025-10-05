@@ -38,8 +38,8 @@ def usuario(request):
             )
             novo_usuario.save()
             
-            # Cria ESP fictício automaticamente
-            funcao_cad_esp(novo_usuario.id_usuario)
+            # ESP será criado manualmente quando necessário
+            # Não cria automaticamente para não poluir banco
             
             return redirect('listagem_usuarios')
         except Exception as e:

@@ -88,7 +88,7 @@ function App() {
               className="textoCirculo botaoSensor"
               onClick={() => navigate('/sensor-mq135')}
             >
-              Sensor MQ135 - Dados de captação: Amônia(NH3)
+              Sensor MQ135 - Dados de captação: Dióxido de Carbono (CO2)
             </span>
             <span className="textoMenor">Gráfico e relatório disponíveis</span>
             <div className="linhaAbaixoTextoMenor"></div>

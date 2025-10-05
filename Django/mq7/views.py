@@ -1,9 +1,5 @@
-import json
-import numpy as np
-import math
 from django.shortcuts import render
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 from .models import DadosSensor_mq7
 from .utils import gerar_relatorio
 
@@ -46,7 +42,8 @@ def mostrar_relatorio(request):
 
 # API para relatório (JSON)
 def relatorio_api(request):
-    relatorio = gerar_relatorio()
+    usuario_id = request.GET.get('usuario_id')
+    relatorio = gerar_relatorio(usuario_id)
     return JsonResponse(relatorio)
 
 

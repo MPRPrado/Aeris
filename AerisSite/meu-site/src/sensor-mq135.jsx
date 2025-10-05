@@ -4,6 +4,7 @@ import './App.css';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from './AuthContext';
+import { useESP } from './ESPContext';
 import ModalPerfil from './ModalPerfil';
 import axios from 'axios';
 
@@ -19,6 +20,7 @@ function Graficos03() {
   const [filtro, setFiltro] = useState('mensal'); // mensal, semanal, diario
   const [modalPerfilAberto, setModalPerfilAberto] = useState(false);
   const { usuario } = useAuth();
+  const { espSelecionado, tipoESP } = useESP();
 
   useEffect(() => {
     // Redirecionar se não estiver logado
@@ -33,8 +35,57 @@ function Graficos03() {
         if (response.data) {
           const { variacao_4_semanas, variacao_inicio_mes, aumento_segunda_semana} = response.data;
           
-          const relatorioTexto = `Nas últimas semanas, os dados coletados pelo sensor registraram uma queda de ${variacao_4_semanas}% na emissão de gases em comparação com a média das quatro semanas anteriores. Em relação ao início do mês, a redução foi ainda mais expressiva, chegando a ${variacao_inicio_mes}%, indicando uma possível melhora nas condições ambientais da região monitorada. Até a segunda semana do mês, os níveis de emissão haviam apresentado um aumento acumulado de ${aumento_segunda_semana}% em relação ao mês anterior, o que havia gerado alerta para possíveis impactos na qualidade do ar.`;
-                  
+          // Função para gerar texto inteligente
+          const gerarTextoRelatorio = (var4sem, varMes, var2sem) => {
+            // Determinar tendência das 4 semanas
+            let tendencia4sem;
+            if (var4sem <= 5) {
+              tendencia4sem = "mantiveram-se estáveis";
+            } else if (var4sem <= 15) {
+              tendencia4sem = `apresentaram variação moderada de ${var4sem}%`;
+            } else if (var4sem <= 30) {
+              tendencia4sem = `registraram variação significativa de ${var4sem}%`;
+            } else {
+              tendencia4sem = `mostraram variação expressiva de ${var4sem}%`;
+            }
+            
+            // Determinar tendência mensal
+            let tendenciaMes;
+            if (varMes <= 5) {
+              tendenciaMes = "permaneceram praticamente inalterados";
+            } else if (varMes <= 15) {
+              tendenciaMes = `apresentaram mudança moderada de ${varMes}%`;
+            } else if (varMes <= 30) {
+              tendenciaMes = `registraram alteração considerável de ${varMes}%`;
+            } else {
+              tendenciaMes = `demonstraram mudança substancial de ${varMes}%`;
+            }
+            
+            // Determinar impacto da segunda semana
+            let impacto2sem;
+            if (var2sem <= 10) {
+              impacto2sem = "sem oscilações significativas";
+            } else if (var2sem <= 25) {
+              impacto2sem = `com variação controlada de ${var2sem}%`;
+            } else {
+              impacto2sem = `apresentando flutuação acentuada de ${var2sem}%`;
+            }
+            
+            // Avaliar condições gerais
+            const mediaGeral = (var4sem + varMes + var2sem) / 3;
+            let avaliacao;
+            if (mediaGeral <= 10) {
+              avaliacao = "indicando condições de qualidade do ar adequadas na região";
+            } else if (mediaGeral <= 25) {
+              avaliacao = "sugerindo variações normais nos níveis de gases de efeito estufa";
+            } else {
+              avaliacao = "requerendo atenção aos níveis de CO2 na atmosfera local";
+            }
+            
+            return `Nas últimas semanas, os níveis de dióxido de carbono (CO2) ${tendencia4sem} em comparação com o período anterior. Em relação ao início do mês, as concentrações ${tendenciaMes}, ${avaliacao}. Durante a segunda semana do período analisado, as medições registraram ${impacto2sem}, mantendo o monitoramento de gases de efeito estufa dentro dos limites de segurança.`;
+          };
+          
+          const relatorioTexto = gerarTextoRelatorio(variacao_4_semanas, variacao_inicio_mes, aumento_segunda_semana);
           setRelatorio(relatorioTexto);
         }
       } catch (error) {
@@ -45,7 +96,19 @@ function Graficos03() {
     // Função para buscar dados do sensor
     const buscarDados = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/api/mq135/?page_size=2000');
+        // Limpar gráfico antes da requisição
+        setDados([]);
+        
+        let response;
+        
+        // Verificar se é ESP Real ou Demo
+        if (tipoESP === 'REAL') {
+          // Buscar dados reais do banco
+          response = await axios.get('http://localhost:8000/api/mq135/?page_size=2000');
+        } else {
+          // Buscar dados de demonstração (não salvos no banco)
+          response = await axios.get('http://localhost:8000/api/dados-demo/?sensor=mq135');
+        }
         if (!response.data || !response.data.results) {
           console.log('Nenhum dado disponível');
           return;
@@ -53,7 +116,7 @@ function Graficos03() {
 
         const dadosFormatados = response.data.results.map((item, index) => ({
           nome: `Leitura ${index + 1}`,
-          valor: parseFloat(item.nh3_ppm),
+          valor: parseFloat(item.co2_ppm),
           timestamp: item.timestamp
         }));
 
@@ -106,8 +169,8 @@ function Graficos03() {
         const dadosComMedia = dadosProcessados.map(item => ({
           ...item,
           media: media,
-          baixo: 25,     // Verde - até 25 ppm
-          medio: 300     // Amarelo - até 300 ppm
+          baixo: 400,    // Verde - até 400 ppm
+          medio: 1000    // Amarelo - até 1000 ppm
         }));
         
         setDados(dadosComMedia);
@@ -121,7 +184,7 @@ function Graficos03() {
     buscarRelatorio();
 
     // Sem atualização automática - dados mensais fixos
-  }, [filtro]); // Recarregar quando filtro mudar
+  }, [filtro, tipoESP]); // Recarregar quando filtro ou ESP mudar
 
   return (
     <div className="pagina-sensor">
@@ -147,7 +210,7 @@ function Graficos03() {
       {/* Caixas e conteúdo */}
       <div className="container-duas-caixas-nao-centralizadas">
         <div className="caixa-central-sensor" style={{ position: "relative" }}>
-          {/* Dropdown no cantinho */}
+          {/* Dropdown de filtro */}
           <select 
             value={filtro}
             onChange={(e) => setFiltro(e.target.value)}
@@ -174,8 +237,25 @@ function Graficos03() {
           </select>
           
           <div className="frase-topo-caixa-maior">
-            Sensor MQ135 - Dados Mensais: Amônia (Nh3)
+            Sensor MQ135 - {tipoESP === 'REAL' ? 'Dados Reais' : 'Demonstração'}: Dióxido de Carbono (CO2)
           </div>
+          
+          {/* Indicador do ESP selecionado */}
+          {espSelecionado && (
+            <div style={{
+              textAlign: "center",
+              margin: "10px 0",
+              padding: "8px 15px",
+              backgroundColor: tipoESP === 'REAL' ? '#4CAF50' : '#FF9800',
+              color: 'white',
+              borderRadius: "6px",
+              fontSize: "13px",
+              fontWeight: "bold",
+              display: "inline-block"
+            }}>
+📡 {espSelecionado.nome}
+            </div>
+          )}
           {/* Gráfico abaixo da frase */}
           <div style={{ width: "100%", display: "flex", justifyContent: "center", marginTop: "50px" }}>
             <LineChart width={700} height={430} data={dados}>
@@ -186,7 +266,7 @@ function Graficos03() {
                 axisLine={true}
               />
               <YAxis 
-                domain={[0, 450]}
+                domain={[0, 2000]}
                 label={{ value: 'PPM', angle: -90, position: 'insideLeft' }}
               />
               <Tooltip 
@@ -202,7 +282,7 @@ function Graficos03() {
                 dataKey="valor"
                 stroke="#ffac75"
                 strokeWidth={2}
-                name="NH3"
+                name="CO2"
                 dot={false}
                 activeDot={{ r: 8 }}
               />
@@ -239,9 +319,9 @@ function Graficos03() {
 
           {/* Frases abaixo do gráfico */}
           <div className="frases-abaixo-grafico">
-            <p><strong>Baixa:</strong> até 25 ppm (nível pré-industrial ou muito bem ventilado)</p>
-            <p><strong>Média:</strong> entre 26 e 300 ppm (nível típico de ambientes urbanos ou internos)</p>
-            <p><strong>Alta:</strong> acima de 301 ppm (pode indicar ventilação insuficiente ou acúmulo de emissões)</p>
+            <p><strong>Baixa:</strong> até 400 ppm (nível pré-industrial ou muito bem ventilado)</p>
+            <p><strong>Média:</strong> entre 401 e 1000 ppm (nível típico de ambientes urbanos ou internos)</p>
+            <p><strong>Alta:</strong> acima de 1001 ppm (pode indicar ventilação insuficiente ou acúmulo de emissões)</p>
           </div>
         </div>
         <div className="caixa-lateral-menor">

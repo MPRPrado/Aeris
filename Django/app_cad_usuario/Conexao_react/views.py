@@ -26,7 +26,7 @@ class SensorDataAPI(APIView):
     def post(self, request):
         co_ppm = request.data.get("CO_ppm")
         c4h10_ppm = request.data.get("C4H10_ppm")
-        nh3_ppm = request.data.get("NH3_ppm")
+        co2_ppm = request.data.get("CO2_ppm")
         esp_id = request.data.get("esp_id", "ESP_REAL_AERIS_2025")  # ID do ESP
         
         # Buscar qual usuário possui este ESP
@@ -58,10 +58,10 @@ class SensorDataAPI(APIView):
                 dispositivo_id=esp_id
             )
             return Response({"message": "Dados MQ7 salvos com sucesso"}, status=status.HTTP_201_CREATED)
-        if nh3_ppm is not None:
+        if co2_ppm is not None:
             DadosSensor_mq135.objects.create(
                 usuario=usuario,
-                nh3_ppm=nh3_ppm,
+                co2_ppm=co2_ppm,
                 dispositivo_id=esp_id
             )
             return Response({"message": "Dados MQ135 salvos com sucesso"}, status=status.HTTP_201_CREATED)
@@ -217,4 +217,44 @@ class CadastrarESPRealAPI(APIView):
             
         except Usuario.DoesNotExist:
             return Response({'error': 'Usuário não encontrado'}, status=status.HTTP_404_NOT_FOUND)
+
+class DadosDemoAPI(APIView):
+    def get(self, request):
+        """Retorna dados de demonstração sem salvar no banco"""
+        import random
+        from datetime import datetime, timedelta
+        
+        sensor = request.GET.get('sensor', 'mq2')  # mq2, mq7, mq135
+        
+        dados_demo = []
+        
+        for dia in range(1, 181):  
+            if sensor == 'mq2':
+                valor = random.randint(800, 2500)  # Butano
+                campo = 'c4h10_ppm'
+            elif sensor == 'mq7':
+                valor = random.randint(500, 9000)  # CO
+                campo = 'co_ppm'
+            elif sensor == 'mq135':
+                valor = random.randint(400, 1500)  # CO2
+                campo = 'co2_ppm'
+            else:
+                valor = 0
+                campo = 'valor'
+            
+            # Simular timestamp dos últimos 30 dias
+            timestamp = datetime.now() - timedelta(days=30-dia)
+            
+            dados_demo.append({
+                'id': dia,
+                campo: valor,
+                'dispositivo_id': 'ESP_DEMO',
+                'timestamp': timestamp.isoformat()
+            })
+        
+        return Response({
+            'results': dados_demo,
+            'count': len(dados_demo),
+            'demo': True
+        })
 

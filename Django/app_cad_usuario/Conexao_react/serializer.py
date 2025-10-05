@@ -33,7 +33,7 @@ class MQ2Serializer(serializers.ModelSerializer):
 class MQ135Serializer(serializers.ModelSerializer):
     class Meta:
         model = DadosSensor_mq135
-        fields = ['id', 'nh3_ppm', 'timestamp']  
+        fields = ['id', 'co2_ppm', 'timestamp']  
 class MQ7Serializer(serializers.ModelSerializer):
     class Meta:
         model = DadosSensor_mq7

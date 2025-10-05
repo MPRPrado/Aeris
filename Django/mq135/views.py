@@ -1,9 +1,5 @@
-import json
-import numpy as np
-import math
 from django.shortcuts import render
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 from .models import DadosSensor_mq135
 from .utils import gerar_relatorio
 
@@ -22,7 +18,7 @@ def mostrar_dados(request):
 
     dados_formatados = [
         {
-            'NH3': f"{dado.nh3_ppm:.1f}",
+            'CO2': f"{dado.co2_ppm:.1f}",
             'disp': dado.dispositivo_id,
             'id': dado.id
         } for dado in leituras
@@ -50,7 +46,8 @@ def mostrar_relatorio(request):
 
 # API para relatório (JSON)
 def relatorio_api(request):
-    relatorio = gerar_relatorio()
+    usuario_id = request.GET.get('usuario_id')
+    relatorio = gerar_relatorio(usuario_id)
     return JsonResponse(relatorio)
 
 

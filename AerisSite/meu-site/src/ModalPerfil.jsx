@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
+import { useESP } from './ESPContext';
 import './ModalPerfil.css';
 
 const ModalPerfil = ({ isOpen, onClose }) => {
   const { usuario, logout } = useAuth();
+  const { espSelecionado, selecionarESP } = useESP();
   const [dispositivos, setDispositivos] = useState([]);
   const [carregando, setCarregando] = useState(false);
-  const [espSelecionado, setEspSelecionado] = useState(null);
 
   const buscarDispositivos = () => {
     if (usuario) {
@@ -85,7 +86,10 @@ const ModalPerfil = ({ isOpen, onClose }) => {
       
       if (response.ok) {
         buscarDispositivos();
-        setEspSelecionado(null);
+        // Se deletou o ESP selecionado, limpar seleção
+        if (espSelecionado && espSelecionado.id === espId) {
+          selecionarESP(null);
+        }
         alert('ESP deletado com sucesso!');
       } else {
         alert('Erro ao deletar ESP');
@@ -144,8 +148,8 @@ const ModalPerfil = ({ isOpen, onClose }) => {
                 {dispositivos.map(dispositivo => (
                   <li 
                     key={dispositivo.id} 
-                    className={`dispositivo-item ${espSelecionado === dispositivo.id ? 'selecionado' : ''}`}
-                    onClick={() => setEspSelecionado(dispositivo.id)}
+                    className={`dispositivo-item ${espSelecionado && espSelecionado.id === dispositivo.id ? 'selecionado' : ''}`}
+                    onClick={() => selecionarESP(dispositivo)}
                   >
                     <div className="dispositivo-info">
                       <span className="dispositivo-nome">{dispositivo.nome}</span>
@@ -175,7 +179,7 @@ const ModalPerfil = ({ isOpen, onClose }) => {
         <div className="modal-footer">
           {espSelecionado && (
             <div className="esp-selecionado">
-              ESP Selecionado: {dispositivos.find(d => d.id === espSelecionado)?.nome}
+              ESP Selecionado: {espSelecionado.nome}
             </div>
           )}
           <button className="logout-btn" onClick={logout}>

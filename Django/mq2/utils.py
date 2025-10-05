@@ -22,14 +22,21 @@ def gerar_relatorio(usuario_id=None):
         media_recentes = np.mean(dados_recentes)
         media_anteriores = np.mean(dados_anteriores) if dados_anteriores else media_recentes
         
-        variacao_4_semanas = abs(((media_anteriores - media_recentes) / media_anteriores) * 100) if media_anteriores != 0 else 0
+        # Calcular variação percentual
+        if media_anteriores > 0:
+            variacao_4_semanas = abs(((media_anteriores - media_recentes) / media_anteriores) * 100)
+        else:
+            variacao_4_semanas = 0
         
         if len(dados) >= 180:
             dados_mes_atual = dados[:90]
             dados_mes_anterior = dados[90:180]
             media_mes_atual = np.mean(dados_mes_atual)
             media_mes_anterior = np.mean(dados_mes_anterior)
-            variacao_inicio_mes = abs(((media_mes_anterior - media_mes_atual) / media_mes_anterior) * 100) if media_mes_anterior != 0 else 0
+            if media_mes_anterior > 0:
+                variacao_inicio_mes = abs(((media_mes_anterior - media_mes_atual) / media_mes_anterior) * 100)
+            else:
+                variacao_inicio_mes = 0
         else:
             variacao_inicio_mes = variacao_4_semanas
             
@@ -38,7 +45,10 @@ def gerar_relatorio(usuario_id=None):
             dados_segunda_semana = dados[30:60]
             media_primeira = np.mean(dados_primeira_semana)
             media_segunda = np.mean(dados_segunda_semana)
-            aumento_segunda_semana = abs(((media_segunda - media_primeira) / media_primeira) * 100) if media_primeira != 0 else 0
+            if media_primeira > 0:
+                aumento_segunda_semana = abs(((media_segunda - media_primeira) / media_primeira) * 100)
+            else:
+                aumento_segunda_semana = 0
         else:
             aumento_segunda_semana = variacao_4_semanas
         

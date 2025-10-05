@@ -24,42 +24,40 @@ def funcao_cad_esp(usuario_id):
             tipo="DEMO"
         )
         
-        # Gera dados fictícios dos últimos 30 dias
-        gerar_dados_ficticios(esp_ficticio.esp_id, usuario)
+        # ESP criado sem dados fictícios no banco
+        # Dados de demonstração serão gerados apenas no frontend
         
         return esp_ficticio
     except Usuario.DoesNotExist:
         return None
 
-def gerar_dados_ficticios(esp_id, usuario):
-    """Gera 180 leituras fictícias (6 por dia x 30 dias)"""
+def gerar_dados_ficticios_frontend():
+    """Gera dados fictícios apenas para o frontend (não salva no banco)"""
+    dados_demo = []
     
-    for i in range(180):
-        timestamp = datetime.now() - timedelta(hours=i*4)
-        
+    for dia in range(1, 31):  # 30 dias
         # MQ2 (Butano) - 800 a 2500 ppm
-        DadosSensor_mq2.objects.create(
-            usuario=usuario,
-            c4h10_ppm=random.randint(800, 2500),
-            dispositivo_id=esp_id,
-            timestamp=timestamp
-        )
+        mq2_valor = random.randint(800, 2500)
         
-        # MQ7 (CO) - 500 a 9000 ppm
-        DadosSensor_mq7.objects.create(
-            usuario=usuario,
-            co_ppm=random.randint(500, 9000),
-            dispositivo_id=esp_id,
-            timestamp=timestamp
-        )
+        # MQ7 (CO) - 500 a 9000 ppm  
+        mq7_valor = random.randint(500, 9000)
         
         # MQ135 (NH3) - 10 a 350 ppm
-        DadosSensor_mq135.objects.create(
-            usuario=usuario,
-            nh3_ppm=random.randint(10, 350),
-            dispositivo_id=esp_id,
-            timestamp=timestamp
-        )
+        mq135_valor = random.randint(10, 350)
+        
+        dados_demo.append({
+            'dia': dia,
+            'mq2': mq2_valor,
+            'mq7': mq7_valor, 
+            'mq135': mq135_valor
+        })
+    
+    return dados_demo
+
+# Função antiga comentada para não salvar no banco
+# def gerar_dados_ficticios(esp_id, usuario):
+#     """REMOVIDO - Não gera mais dados no banco para não atrapalhar dados reais"""
+#     pass
 
 def criar_esp_real():
     """Identifica ESP real pelo ID específico"""
