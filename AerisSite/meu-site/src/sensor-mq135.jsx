@@ -190,7 +190,7 @@ function Graficos03() {
     <div className="pagina-sensor">
       <div className="topo-sensor">
         {/* Logo */}
-        <div className="logoErisPequena">
+        <div className="logoErisPequena" onClick={() => navigate('/TelaPrincipal')} style={{ cursor: 'pointer' }}>
           <img
             src="/AerisLOGOsemBG 2.png"
             className="logo-img-pequena"
@@ -217,7 +217,7 @@ function Graficos03() {
             style={{
               position: "absolute",
               top: "15px",
-              right: "15px",
+              right: "2em",
               padding: "8px 12px",
               borderRadius: "6px",
               border: "2px solid #ffac75",
@@ -243,22 +243,22 @@ function Graficos03() {
           {/* Indicador do ESP selecionado */}
           {espSelecionado && (
             <div style={{
-              textAlign: "center",
-              margin: "10px 0",
+              margin: "0 0 0 30px",
               padding: "8px 15px",
               backgroundColor: tipoESP === 'REAL' ? '#4CAF50' : '#FF9800',
               color: 'white',
               borderRadius: "6px",
               fontSize: "13px",
               fontWeight: "bold",
-              display: "inline-block"
+              display: "inline-block",
+              verticalAlign: "middle"
             }}>
 📡 {espSelecionado.nome}
             </div>
           )}
           {/* Gráfico abaixo da frase */}
-          <div style={{ width: "100%", display: "flex", justifyContent: "center", marginTop: "50px" }}>
-            <LineChart width={700} height={430} data={dados}>
+          <div style={{ width: "100%", display: "flex", justifyContent: "center", marginTop: "10px", marginLeft: "-3em" }}>
+            <LineChart width={600} height={300} data={dados} fontSize={14}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis 
                 dataKey="nome" 
@@ -276,7 +276,7 @@ function Graficos03() {
                 }}
                 labelFormatter={() => ''}
               />
-              <Legend wrapperStyle={{ top: 450, left: 0 }} />
+              <Legend wrapperStyle={{ top: 260, left: 0 }} />
               <Line
                 type="monotone"
                 dataKey="valor"
@@ -334,18 +334,6 @@ function Graficos03() {
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Frase/botão para voltar à página inicial */}
-      <div className="voltar-inicio-container">
-        <span
-          className="voltar-inicio-link"
-          onClick={() => navigate("/TelaPrincipal")}
-          tabIndex={0}
-          role="button"
-        >
-          Voltar para a página inicial
-        </span>
       </div>
 
       {/* Modal de Perfil */}

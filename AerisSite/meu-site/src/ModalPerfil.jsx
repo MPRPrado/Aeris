@@ -154,7 +154,7 @@ const ModalPerfil = ({ isOpen, onClose }) => {
                     onClick={() => selecionarESP(dispositivo)}
                   >
                     <div className="dispositivo-info">
-                      <span className="dispositivo-nome">{dispositivo.nome}</span>
+                      <span className="dispositivo-nome">📡 {dispositivo.nome}</span>
                       <span className={`dispositivo-tipo ${dispositivo.tipo.toLowerCase()}`}>
                         {dispositivo.tipo === 'REAL' ? 'Real' : 'Demo'}
                       </span>

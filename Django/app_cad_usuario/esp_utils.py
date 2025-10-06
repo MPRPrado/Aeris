@@ -20,7 +20,7 @@ def funcao_cad_esp(usuario_id):
         esp_ficticio = DispositivoESP.objects.create(
             usuario=usuario,
             esp_id=f"ESP_DEMO_{usuario_id}_{random.randint(1000,9999)}",
-            nome=f"ESP Demo - {usuario.nome}",
+            nome=f"ESP Demo - ETE FMC",
             tipo="DEMO"
         )
         

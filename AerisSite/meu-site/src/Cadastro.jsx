@@ -10,6 +10,8 @@ function Cadastro() {
   const [senha, setSenha] = useState('');
   const [nome, setNome] = useState('');
   const [mostrarSenha, setMostrarSenha] = useState(false);
+  const [mostrarSenhaPopup, setMostrarSenhaPopup] = useState(false);
+  const [mostrarConfirmarSenhaPopup, setMostrarConfirmarSenhaPopup] = useState(false);
   const [erro, setErro] = useState('');
   const navigate = useNavigate();
   const { login } = useAuth();
@@ -154,7 +156,7 @@ function Cadastro() {
                   cursor: 'pointer', 
                   fontSize: '1.2em',
                   marginTop: '1em',
-                  marginLeft: '2em'
+                  marginLeft: '17.5em'
                 }}
               >
                 Voltar para a tela inicial
@@ -169,8 +171,38 @@ function Cadastro() {
           <div className="popup-overlay">
             <div className="popup-content">
               <h2 className="titulo-popup">Redefinir Senha</h2>
-              <input type="password" className="input-popup" placeholder="Nova senha" />
-              <input type="password" className="input-popup" placeholder="Confirmar nova senha" />
+              <input type="email" className="input-popup" placeholder="Email" />
+              
+              <div className="input-wrapper-popup">
+                <input 
+                  type={mostrarSenhaPopup ? 'text' : 'password'} 
+                  className="input-popup" 
+                  placeholder="Nova senha" 
+                />
+                <button 
+                  type="button" 
+                  className="mostrar-senha-popup"
+                  onClick={() => setMostrarSenhaPopup(!mostrarSenhaPopup)}
+                >
+                  {mostrarSenhaPopup ? 'Esconder' : 'Mostrar'}
+                </button>
+              </div>
+              
+              <div className="input-wrapper-popup">
+                <input 
+                  type={mostrarConfirmarSenhaPopup ? 'text' : 'password'} 
+                  className="input-popup" 
+                  placeholder="Confirmar nova senha" 
+                />
+                <button 
+                  type="button" 
+                  className="mostrar-senha-popup"
+                  onClick={() => setMostrarConfirmarSenhaPopup(!mostrarConfirmarSenhaPopup)}
+                >
+                  {mostrarConfirmarSenhaPopup ? 'Esconder' : 'Mostrar'}
+                </button>
+              </div>
+              
               <button className="botao-confirmar" onClick={() => setMostrarPopup(false)}>Confirmar</button>
               <button className="botao-cancelar" onClick={() => setMostrarPopup(false)}>Cancelar</button>
             </div>
@@ -199,7 +231,7 @@ function Cadastro() {
 
             <form onSubmit={handleCadastro}>
               <div className="input-wrapper3">
-                <img src="/user (1) 1.png" className="input-icon" alt="ícone" />
+                <img src="/user (1) 1.png" className="input-icon-cadastro" alt="ícone" />
                 <input 
                   type="text" 
                   className="input-Escrita" 
@@ -211,7 +243,7 @@ function Cadastro() {
               </div>
 
               <div className="input-wrapper4">
-                <img src="/envelopes (1) 1.png" className="input-icon" alt="ícone" />
+                <img src="/envelopes (1) 1.png" className="input-icon-cadastro" alt="ícone" />
                 <input 
                   type="email" 
                   className="input-Escrita" 
@@ -223,7 +255,7 @@ function Cadastro() {
               </div>
 
               <div className="input-wrapper5">
-                <img src="/lock-hashtag 1.png" className="input-icon" alt="ícone" />
+                <img src="/lock-hashtag 1.png" className="input-icon-cadastro" alt="ícone" />
                 <input 
                   type={mostrarSenha ? 'text' : 'password'} 
                   className="input-Escrita" 
@@ -254,8 +286,8 @@ function Cadastro() {
                   textDecoration: 'underline', 
                   cursor: 'pointer', 
                   fontSize: '1.2em',
-                  marginTop: '1em',
-                  marginLeft: '38em'
+                  marginTop: '0em',
+                  marginLeft: '32.3em'
                 }}
               >
                 Voltar para a tela inicial

@@ -96,6 +96,7 @@ function App() {
         </div>
       </div>
 
+
       <div className="mensagemFixa">
         <h2>Informações Gerais dos Sensores</h2>
         <p>
@@ -103,9 +104,6 @@ function App() {
           analisar gráficos detalhados e gerar relatórios para monitoramento ambiental.
           Fique atento às atualizações para garantir a qualidade do ar e a segurança do ambiente.
         </p>
-      </div>
-
-      <div className="suporteContainer">
         <p className="textoSuporte">
           Está enfrentando algum tipo de problema? Entre em contato com o suporte da equipe Aeris pelo botão abaixo
         </p>
@@ -117,6 +115,7 @@ function App() {
         </button>
       </div>
 
+      
       {/* Modal de Perfil */}
       <ModalPerfil 
         isOpen={modalPerfilAberto} 
