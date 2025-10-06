@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework import routers
-from .views import UsuarioViewSet,MQ2ViewSet, MQ135ViewSet, MQ7ViewSet, UsuarioAtivoAPI, DispositivosAPI, CadastrarESPAPI, DeletarESPAPI, CadastrarESPRealAPI, DadosDemoAPI
+from .views import UsuarioViewSet,MQ2ViewSet, MQ135ViewSet, MQ7ViewSet, UsuarioAtivoAPI, DispositivosAPI, CadastrarESPAPI, DeletarESPAPI, CadastrarESPRealAPI, EnviarCodigoRecuperacaoAPI, RedefinirSenhaAPI, DadosDemoAPI
 
 router = routers.DefaultRouter()
 router.register(r'usuarios', UsuarioViewSet)
@@ -15,5 +15,7 @@ urlpatterns = [
     path('cadastrar-esp/', CadastrarESPAPI.as_view(), name='cadastrar-esp'),
     path('cadastrar-esp-real/', CadastrarESPRealAPI.as_view(), name='cadastrar-esp-real'),
     path('deletar-esp/<int:esp_id>/', DeletarESPAPI.as_view(), name='deletar-esp'),
+    path('enviar-codigo-recuperacao/', EnviarCodigoRecuperacaoAPI.as_view(), name='enviar-codigo'),
+    path('redefinir-senha/', RedefinirSenhaAPI.as_view(), name='redefinir-senha'),
     path('dados-demo/', DadosDemoAPI.as_view(), name='dados-demo'),
 ]

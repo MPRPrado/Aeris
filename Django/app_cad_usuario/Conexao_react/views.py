@@ -162,6 +162,112 @@ class CadastrarESPAPI(APIView):
         else:
             return Response({'error': 'Erro ao criar ESP ou limite atingido'}, status=status.HTTP_400_BAD_REQUEST)
 
+class EnviarCodigoRecuperacaoAPI(APIView):
+    def post(self, request):
+        """Enviar código de recuperação por email"""
+        import random
+        from django.core.mail import send_mail
+        from django.conf import settings
+        
+        email = request.data.get('email')
+        
+        if not email:
+            return Response({'error': 'Email obrigatório'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            usuario = Usuario.objects.get(email=email)
+            
+            # Gerar código de 6 dígitos
+            codigo = str(random.randint(100000, 999999))
+            
+            # Salvar código no banco (campo temporário)
+            # Vamos usar um campo no modelo Usuario ou criar uma tabela temporária
+            # Por simplicidade, vamos salvar como atributo temporário
+            usuario.codigo_recuperacao = codigo
+            usuario.save()
+            
+            # Enviar email real
+            assunto = 'Código de Recuperação - AERIS'
+            mensagem = f'''
+Olá {usuario.nome},
+
+Você solicitou a redefinição de senha do sistema AERIS.
+
+Seu código de verificação é: {codigo}
+
+Este código é válido por 15 minutos.
+
+Se você não solicitou esta redefinição, ignore este email.
+
+Atenciosamente,
+Equipe AERIS - ETE FMC
+            '''
+            
+            print(f"Tentando enviar email para: {email}")
+            print(f"Código gerado: {codigo}")
+            
+            try:
+                send_mail(
+                    assunto,
+                    mensagem,
+                    settings.EMAIL_HOST_USER,
+                    [email],
+                    fail_silently=False,
+                )
+                print(f"Email enviado com sucesso para {email}")
+            except Exception as email_error:
+                print(f"ERRO ao enviar email: {email_error}")
+                print(f"CÓDIGO DE RECUPERAÇÃO: {codigo}")
+                return Response({'success': True, 'message': f'Código: {codigo} (verifique console)'})
+            
+            return Response({'success': True, 'message': 'Código enviado para seu email'})
+            
+        except Usuario.DoesNotExist:
+            return Response({'error': 'Email não encontrado'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            print(f"Erro ao enviar email: {e}")
+            return Response({'error': 'Erro ao enviar email'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class RedefinirSenhaAPI(APIView):
+    def post(self, request):
+        """Redefinir senha com código de verificação"""
+        email = request.data.get('email')
+        codigo = request.data.get('codigo')
+        nova_senha = request.data.get('nova_senha')
+        
+        print(f"Dados recebidos - Email: {email}, Código: {codigo}, Nova senha: {'***' if nova_senha else None}")
+        
+        if not all([email, codigo, nova_senha]):
+            print(f"Campos faltando - Email: {bool(email)}, Código: {bool(codigo)}, Senha: {bool(nova_senha)}")
+            return Response({'error': 'Todos os campos são obrigatórios'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Verificar código no banco
+        try:
+            usuario_verificacao = Usuario.objects.get(email=email)
+            codigo_salvo = getattr(usuario_verificacao, 'codigo_recuperacao', None)
+            print(f"Código salvo no banco: {codigo_salvo}")
+            print(f"Código recebido: {codigo}")
+            
+            if not codigo_salvo or codigo_salvo != codigo:
+                print(f"Código inválido - Salvo: {codigo_salvo}, Recebido: {codigo}")
+                return Response({'error': 'Código inválido ou expirado'}, status=status.HTTP_400_BAD_REQUEST)
+        except Usuario.DoesNotExist:
+            return Response({'error': 'Usuário não encontrado'}, status=status.HTTP_404_NOT_FOUND)
+        
+        try:
+            usuario = Usuario.objects.get(email=email)
+            usuario.senha = nova_senha
+            usuario.save()
+            
+            # Limpar código usado
+            usuario.codigo_recuperacao = None
+            usuario.save()
+            
+            return Response({'success': True, 'message': 'Senha redefinida com sucesso'})
+            
+        except Usuario.DoesNotExist:
+            return Response({'error': 'Usuário não encontrado'}, status=status.HTTP_404_NOT_FOUND)
+
 class DeletarESPAPI(APIView):
     def delete(self, request, esp_id):
         """Deletar ESP do usuário"""

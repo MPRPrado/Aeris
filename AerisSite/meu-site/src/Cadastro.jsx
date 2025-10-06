@@ -12,6 +12,11 @@ function Cadastro() {
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const [mostrarSenhaPopup, setMostrarSenhaPopup] = useState(false);
   const [mostrarConfirmarSenhaPopup, setMostrarConfirmarSenhaPopup] = useState(false);
+  const [emailRecuperacao, setEmailRecuperacao] = useState('');
+  const [codigoRecuperacao, setCodigoRecuperacao] = useState('');
+  const [novaSenha, setNovaSenha] = useState('');
+  const [confirmarSenha, setConfirmarSenha] = useState('');
+  const [codigoEnviado, setCodigoEnviado] = useState(false);
   const [erro, setErro] = useState('');
   const navigate = useNavigate();
   const { login } = useAuth();
@@ -82,6 +87,58 @@ function Cadastro() {
     setEmail('');
     setSenha('');
     setNome('');
+  };
+
+  const enviarCodigoRecuperacao = async () => {
+    if (!emailRecuperacao) {
+      alert('Digite um email válido');
+      return;
+    }
+    
+    try {
+      const response = await axios.post('http://127.0.0.1:8000/api/enviar-codigo-recuperacao/', {
+        email: emailRecuperacao
+      });
+      
+      if (response.data.success) {
+        setCodigoEnviado(true);
+        alert('Código enviado para seu email!');
+      }
+    } catch (error) {
+      alert('Erro ao enviar código. Verifique o email.');
+    }
+  };
+
+  const redefinirSenha = async () => {
+    if (!codigoRecuperacao || !novaSenha || !confirmarSenha) {
+      alert('Preencha todos os campos');
+      return;
+    }
+    
+    if (novaSenha !== confirmarSenha) {
+      alert('Senhas não coincidem');
+      return;
+    }
+    
+    try {
+      const response = await axios.post('http://127.0.0.1:8000/api/redefinir-senha/', {
+        email: emailRecuperacao,
+        codigo: codigoRecuperacao,
+        nova_senha: novaSenha
+      });
+      
+      if (response.data.success) {
+        alert('Senha redefinida com sucesso!');
+        setMostrarPopup(false);
+        setCodigoEnviado(false);
+        setEmailRecuperacao('');
+        setCodigoRecuperacao('');
+        setNovaSenha('');
+        setConfirmarSenha('');
+      }
+    } catch (error) {
+      alert('Código inválido ou expirado');
+    }
   };
 
   return (
@@ -171,40 +228,84 @@ function Cadastro() {
           <div className="popup-overlay">
             <div className="popup-content">
               <h2 className="titulo-popup">Redefinir Senha</h2>
-              <input type="email" className="input-popup" placeholder="Email" />
               
-              <div className="input-wrapper-popup">
-                <input 
-                  type={mostrarSenhaPopup ? 'text' : 'password'} 
-                  className="input-popup" 
-                  placeholder="Nova senha" 
-                />
-                <button 
-                  type="button" 
-                  className="mostrar-senha-popup"
-                  onClick={() => setMostrarSenhaPopup(!mostrarSenhaPopup)}
-                >
-                  {mostrarSenhaPopup ? 'Esconder' : 'Mostrar'}
-                </button>
-              </div>
+              <input 
+                type="email" 
+                className="input-popup" 
+                placeholder="Email" 
+                value={emailRecuperacao}
+                onChange={(e) => setEmailRecuperacao(e.target.value)}
+                disabled={codigoEnviado}
+              />
               
-              <div className="input-wrapper-popup">
-                <input 
-                  type={mostrarConfirmarSenhaPopup ? 'text' : 'password'} 
-                  className="input-popup" 
-                  placeholder="Confirmar nova senha" 
-                />
-                <button 
-                  type="button" 
-                  className="mostrar-senha-popup"
-                  onClick={() => setMostrarConfirmarSenhaPopup(!mostrarConfirmarSenhaPopup)}
-                >
-                  {mostrarConfirmarSenhaPopup ? 'Esconder' : 'Mostrar'}
-                </button>
-              </div>
-              
-              <button className="botao-confirmar" onClick={() => setMostrarPopup(false)}>Confirmar</button>
-              <button className="botao-cancelar" onClick={() => setMostrarPopup(false)}>Cancelar</button>
+              {!codigoEnviado ? (
+                <>
+                  <button className="botao-confirmar" onClick={enviarCodigoRecuperacao}>
+                    Enviar Código
+                  </button>
+                  <button className="botao-cancelar" onClick={() => setMostrarPopup(false)}>
+                    Cancelar
+                  </button>
+                </>
+              ) : (
+                <>
+                  <input 
+                    type="text" 
+                    className="input-popup" 
+                    placeholder="Código de verificação" 
+                    value={codigoRecuperacao}
+                    onChange={(e) => setCodigoRecuperacao(e.target.value)}
+                  />
+                  
+                  <div className="input-wrapper-popup">
+                    <input 
+                      type={mostrarSenhaPopup ? 'text' : 'password'} 
+                      className="input-popup" 
+                      placeholder="Nova senha" 
+                      value={novaSenha}
+                      onChange={(e) => setNovaSenha(e.target.value)}
+                    />
+                    <button 
+                      type="button" 
+                      className="mostrar-senha-popup"
+                      onClick={() => setMostrarSenhaPopup(!mostrarSenhaPopup)}
+                    >
+                      {mostrarSenhaPopup ? 'Esconder' : 'Mostrar'}
+                    </button>
+                  </div>
+                  
+                  <div className="input-wrapper-popup">
+                    <input 
+                      type={mostrarConfirmarSenhaPopup ? 'text' : 'password'} 
+                      className="input-popup" 
+                      placeholder="Confirmar nova senha" 
+                      value={confirmarSenha}
+                      onChange={(e) => setConfirmarSenha(e.target.value)}
+                    />
+                    <button 
+                      type="button" 
+                      className="mostrar-senha-popup"
+                      onClick={() => setMostrarConfirmarSenhaPopup(!mostrarConfirmarSenhaPopup)}
+                    >
+                      {mostrarConfirmarSenhaPopup ? 'Esconder' : 'Mostrar'}
+                    </button>
+                  </div>
+                  
+                  <button className="botao-confirmar" onClick={redefinirSenha}>
+                    Redefinir Senha
+                  </button>
+                  <button className="botao-cancelar" onClick={() => {
+                    setMostrarPopup(false);
+                    setCodigoEnviado(false);
+                    setEmailRecuperacao('');
+                    setCodigoRecuperacao('');
+                    setNovaSenha('');
+                    setConfirmarSenha('');
+                  }}>
+                    Cancelar
+                  </button>
+                </>
+              )}
             </div>
           </div>
         )}

@@ -6,6 +6,7 @@ class Usuario(models.Model):
     nome = models.CharField(max_length=100)
     email = models.EmailField(max_length=100)
     senha = models.CharField(max_length=128)
+    codigo_recuperacao = models.CharField(max_length=6, null=True, blank=True)
     
     def save(self, *args, **kwargs):
         if not self.senha.startswith('pbkdf2_'):
