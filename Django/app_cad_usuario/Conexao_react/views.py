@@ -334,15 +334,15 @@ class DadosDemoAPI(APIView):
         
         dados_demo = []
         
-        for dia in range(1, 181):  
+        for dia in range(1, 4501):  
             if sensor == 'mq2':
-                valor = random.randint(800, 2500)  # Butano
+                valor = random.randint(10, 10000)  # Butano
                 campo = 'c4h10_ppm'
             elif sensor == 'mq7':
-                valor = random.randint(500, 9000)  # CO
+                valor = random.randint(10, 300)  # CO
                 campo = 'co_ppm'
             elif sensor == 'mq135':
-                valor = random.randint(400, 1500)  # CO2
+                valor = random.randint(300, 7000)  # CO2
                 campo = 'co2_ppm'
             else:
                 valor = 0

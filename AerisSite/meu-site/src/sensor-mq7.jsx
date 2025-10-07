@@ -102,8 +102,8 @@ function Graficos02() {
         
         // Verificar se é ESP Real ou Demo
         if (tipoESP === 'REAL') {
-          // Buscar dados reais do banco
-          response = await axios.get('http://localhost:8000/api/mq7/?page_size=2000');
+          // Buscar dados reais do banco - sempre as últimas 4500 leituras
+          response = await axios.get('http://localhost:8000/api/mq7/?page_size=4500');
         } else {
           // Buscar dados de demonstração (não salvos no banco)
           response = await axios.get('http://localhost:8000/api/dados-demo/?sensor=mq7');
@@ -113,7 +113,7 @@ function Graficos02() {
           return;
         }
 
-        const dadosFormatados = response.data.results.map((item, index) => ({
+        const dadosFormatados = response.data.results.reverse().map((item, index) => ({
           nome: `Leitura ${index + 1}`,
           valor: parseFloat(item.co_ppm),
           timestamp: item.timestamp
@@ -123,38 +123,37 @@ function Graficos02() {
         let dadosProcessados = [];
         
         if (filtro === 'diario') {
-          // 6 leituras por dia (a cada 4 horas)
-          dadosProcessados = dadosFormatados.slice(0, 6).map((item, index) => ({
-            nome: `${index * 4}h`,
+          // 150 leituras por dia (a cada ~10 minutos) - pegar as mais recentes
+          dadosProcessados = dadosFormatados.slice(-150).map((item, index) => ({
+            nome: `${Math.floor(index * 9.6)}min`,
             valor: item.valor
           }));
         } else if (filtro === 'semanal') {
-          // 7 dias
-          for (let i = 0; i < Math.min(dadosFormatados.length, 42); i += 6) {
-            const leiturasDoDia = dadosFormatados.slice(i, i + 6);
+          // 7 dias - pegar as últimas 1050 leituras
+          const ultimasLeituras = dadosFormatados.slice(-1050);
+          for (let i = 0; i < ultimasLeituras.length; i += 150) {
+            const leiturasDoDia = ultimasLeituras.slice(i, i + 150);
             const mediaValor = leiturasDoDia.reduce((acc, curr) => acc + curr.valor, 0) / leiturasDoDia.length;
-            const dia = Math.floor(i / 6) + 1;
+            const dia = Math.floor(i / 150) + 1;
             dadosProcessados.push({
               nome: `Dia ${dia}`,
               valor: mediaValor
             });
           }
         } else {
-          // Mensal - 30 dias (criar array completo mesmo sem dados)
+          // Mensal - sempre usar 4500 leituras (30 dias completos)
+          // Se não tiver 4500 atuais, pega das anteriores
+          const leituras4500 = dadosFormatados.slice(-4500);
+          
           for (let dia = 1; dia <= 30; dia++) {
-            const startIndex = (dia - 1) * 6;
-            const leiturasDoDia = dadosFormatados.slice(startIndex, startIndex + 6);
+            const startIndex = (dia - 1) * 150;
+            const leiturasDoDia = leituras4500.slice(startIndex, startIndex + 150);
             
-            if (leiturasDoDia.length > 0) {
+            if (leiturasDoDia.length === 150) {
               const mediaValor = leiturasDoDia.reduce((acc, curr) => acc + curr.valor, 0) / leiturasDoDia.length;
               dadosProcessados.push({
                 nome: `Dia ${dia}`,
                 valor: mediaValor
-              });
-            } else {
-              dadosProcessados.push({
-                nome: `Dia ${dia}`,
-                valor: null
               });
             }
           }
@@ -164,12 +163,10 @@ function Graficos02() {
         const valoresValidos = dadosProcessados.filter(item => item.valor !== null).map(item => item.valor);
         const media = valoresValidos.length > 0 ? valoresValidos.reduce((acc, val) => acc + val, 0) / valoresValidos.length : 0;
         
-        // Adicionar linha de média e linhas de referência a todos os pontos
+        // Adicionar linha de média
         const dadosComMedia = dadosProcessados.map(item => ({
           ...item,
-          media: media,
-          baixo: 1000,   // Verde - até 1000 ppm
-          medio: 8000    // Amarelo - até 8000 ppm
+          media: media
         }));
         
         setDados(dadosComMedia);
@@ -268,8 +265,8 @@ function Graficos02() {
               />
               <Tooltip 
                 formatter={(value, name, props) => {
-                  if (value === null) return ['N/A', name === 'Média' ? 'Média' : name === 'Nível Baixo' ? 'Nível Baixo' : name === 'Nível Médio' ? 'Nível Médio' : `${props.payload.nome} - Concentração`];
-                  return [`${value.toFixed(2)} ppm`, name === 'Média' ? 'Média' : name === 'Nível Baixo' ? 'Nível Baixo' : name === 'Nível Médio' ? 'Nível Médio' : `${props.payload.nome} - Concentração`];
+                  if (value === null) return ['N/A', name === 'Média' ? 'Média' : `${props.payload.nome} - Concentração`];
+                  return [`${value.toFixed(2)} ppm`, name === 'Média' ? 'Média' : `${props.payload.nome} - Concentração`];
                 }}
                 labelFormatter={() => ''}
               />
@@ -292,24 +289,7 @@ function Graficos02() {
                 name="Média"
                 dot={false}
               />
-              <Line
-                type="monotone"
-                dataKey="baixo"
-                stroke="#00ff00ff"
-                strokeWidth={3}
-                strokeDasharray="3 3"
-                name="Nível Baixo"
-                dot={false}
-              />
-              <Line
-                type="monotone"
-                dataKey="medio"
-                stroke="#d4d400ff"
-                strokeWidth={3}
-                strokeDasharray="3 3"
-                name="Nível Médio"
-                dot={false}
-              />
+
 
             </LineChart>
           </div>

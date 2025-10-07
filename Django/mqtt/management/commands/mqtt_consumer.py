@@ -13,9 +13,9 @@ MQTT_PORT = 1883
 
 def on_connect(client, userdata, flags, rc):
     print("Conectado ao broker MQTT")
-    #client.subscribe("sensores/mq135")
+    client.subscribe("sensores/mq135")
     client.subscribe("sensores/mq2")
-    #client.subscribe("sensores/mq7")
+    client.subscribe("sensores/mq7")
 
 def on_message(client, userdata, msg):
     payload = msg.payload.decode().strip()
@@ -25,10 +25,10 @@ def on_message(client, userdata, msg):
 
         if msg.topic == "sensores/mq135":
             DadosSensor_mq135.objects.create(
-                nh3_ppm=ppm,
+                co2_ppm=ppm,
                 dispositivo_id="ESP32_MQ135"
             )
-            print(f"MQ135 salvo no banco: {ppm:.2f} ppm NH3")
+            print(f"MQ135 salvo no banco: {ppm:.2f} ppm CO2")
             
             # Verificar alerta - buscar email do usuário logado
             try:
@@ -43,7 +43,7 @@ def on_message(client, userdata, msg):
                 c4h10_ppm=ppm,
                 dispositivo_id="ESP32_MQ2"
             )
-            print(f"MQ2 salvo no banco: Rs = {ppm:.2f}")
+            print(f"MQ2 salvo no banco: {ppm:.2f} ppm C4H10")
             
             # Verificar alerta - buscar email do usuário logado
             try:
