@@ -4,55 +4,82 @@ from django.utils import timezone
 from django.db import DatabaseError
 from .models import DadosSensor_mq7 as DadosSensor
 
+def obter_dados_mensais_completos(usuario_id=None):
+    """Retorna dados mensais completos (4500 registros) ou None se não houver mês completo"""
+    try:
+        # Obter total de registros
+        if usuario_id:
+            total_registros = DadosSensor.objects.filter(usuario_id=usuario_id).count()
+        else:
+            total_registros = DadosSensor.objects.count()
+        
+        # Se não há registros suficientes para um mês completo, retorna None
+        if total_registros < 180:
+            return None
+        
+        # Calcular qual mês completo mostrar
+        mes_completo = (total_registros // 180)
+        inicio_mes = (mes_completo - 1) * 180
+        fim_mes = mes_completo * 180
+        
+        # Buscar os 180 dados do mês mais recente completo
+        if usuario_id:
+            dados = list(DadosSensor.objects.filter(usuario_id=usuario_id)
+                        .order_by('-id')[inicio_mes:fim_mes]
+                        .values('id', 'co_ppm', 'timestamp'))
+        else:
+            dados = list(DadosSensor.objects.all()
+                        .order_by('-id')[inicio_mes:fim_mes]
+                        .values('id', 'co_ppm', 'timestamp'))
+        
+        return {
+            'dados': dados,
+            'mes_numero': mes_completo,
+            'total_registros': total_registros
+        }
+        
+    except DatabaseError:
+        return None
+
 def gerar_relatorio(usuario_id=None):
     try:
-        # Pegar últimas 180 leituras
-        if usuario_id:
-            dados = list(DadosSensor.objects.filter(usuario_id=usuario_id).order_by('-timestamp')[:180].values_list("co_ppm", flat=True))
-        else:
-            dados = list(DadosSensor.objects.all().order_by('-timestamp')[:180].values_list("co_ppm", flat=True))
+        # Usar dados mensais completos para relatório
+        resultado_mensal = obter_dados_mensais_completos(usuario_id)
         
-        if len(dados) < 60:
-            return "Sem dados suficientes."
+        if not resultado_mensal:
+            return "Aguardando dados suficientes para gerar relatório mensal completo."
         
-        # Dividir em grupos para cálculos
-        dados_recentes = dados[:60]
-        dados_anteriores = dados[60:120] if len(dados) >= 120 else dados[60:]
+        dados_valores = [item['co_ppm'] for item in resultado_mensal['dados']]
         
-        media_recentes = np.mean(dados_recentes)
-        media_anteriores = np.mean(dados_anteriores) if dados_anteriores else media_recentes
+        if len(dados_valores) < 180:
+            return "Sem dados suficientes para relatório mensal."
         
-        # Calcular variação percentual
-        if media_anteriores > 0:
-            variacao_4_semanas = abs(((media_anteriores - media_recentes) / media_anteriores) * 100)
-        else:
-            variacao_4_semanas = 0
+        # Dividir mês em semanas (180 / 4 = 45 por semana)
+        semana1 = dados_valores[:45]
+        semana2 = dados_valores[45:90]
+        semana3 = dados_valores[90:135]
+        semana4 = dados_valores[135:180]
         
-        if len(dados) >= 180:
-            dados_mes_atual = dados[:90]
-            dados_mes_anterior = dados[90:180]
-            media_mes_atual = np.mean(dados_mes_atual)
-            media_mes_anterior = np.mean(dados_mes_anterior)
-            if media_mes_anterior > 0:
-                variacao_inicio_mes = abs(((media_mes_anterior - media_mes_atual) / media_mes_anterior) * 100)
-            else:
-                variacao_inicio_mes = 0
-        else:
-            variacao_inicio_mes = variacao_4_semanas
-            
-        if len(dados) >= 60:
-            dados_primeira_semana = dados[:30]
-            dados_segunda_semana = dados[30:60]
-            media_primeira = np.mean(dados_primeira_semana)
-            media_segunda = np.mean(dados_segunda_semana)
-            if media_primeira > 0:
-                aumento_segunda_semana = abs(((media_segunda - media_primeira) / media_primeira) * 100)
-            else:
-                aumento_segunda_semana = 0
-        else:
-            aumento_segunda_semana = variacao_4_semanas
+        media_semana1 = np.mean(semana1)
+        media_semana2 = np.mean(semana2)
+        media_semana3 = np.mean(semana3)
+        media_semana4 = np.mean(semana4)
         
-        # Calcular previsão simples baseada na tendência
+        # Calcular variações
+        variacao_4_semanas = abs(((media_semana1 - media_semana4) / media_semana1) * 100) if media_semana1 > 0 else 0
+        
+        # Primeira vs segunda quinzena
+        primeira_quinzena = dados_valores[:90]
+        segunda_quinzena = dados_valores[90:180]
+        media_primeira_quinzena = np.mean(primeira_quinzena)
+        media_segunda_quinzena = np.mean(segunda_quinzena)
+        
+        variacao_inicio_mes = abs(((media_primeira_quinzena - media_segunda_quinzena) / media_primeira_quinzena) * 100) if media_primeira_quinzena > 0 else 0
+        
+        # Segunda semana vs primeira
+        aumento_segunda_semana = abs(((media_semana2 - media_semana1) / media_semana1) * 100) if media_semana1 > 0 else 0
+        
+        # Previsões
         tendencia = (variacao_4_semanas + variacao_inicio_mes) / 2
         previsao_min = tendencia * 0.6
         previsao_max = tendencia * 1.4
@@ -62,7 +89,9 @@ def gerar_relatorio(usuario_id=None):
             "variacao_inicio_mes": int(variacao_inicio_mes),
             "aumento_segunda_semana": int(aumento_segunda_semana),
             "previsao_min": int(previsao_min),
-            "previsao_max": int(previsao_max)
+            "previsao_max": int(previsao_max),
+            "mes_numero": resultado_mensal['mes_numero'],
+            "total_registros": resultado_mensal['total_registros']
         }
         
     except DatabaseError:

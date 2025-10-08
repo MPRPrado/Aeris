@@ -33,6 +33,11 @@ function Graficos01() {
       try {
         const response = await axios.get('http://localhost:8000/mq2/relatorio/');
         if (response.data) {
+          // Verificar se é uma mensagem de string ou dados do relatório
+          if (response.data.message) {
+            setRelatorio(response.data.message);
+            return;
+          }
           const { variacao_4_semanas, variacao_inicio_mes, aumento_segunda_semana} = response.data;
           
           // Função para gerar texto inteligente
@@ -342,6 +347,22 @@ function Graficos01() {
             <div className="frase-relatorio-menor">
               {relatorio || 'Carregando relatório...'}
             </div>
+            <button 
+              onClick={() => window.open('http://localhost:8000/mq2/download-pdf/', '_blank')}
+              style={{
+                marginTop: '15px',
+                padding: '10px 20px',
+                backgroundColor: '#ff6600',
+                color: 'white',
+                border: 'none',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                fontSize: '14px',
+                fontWeight: 'bold'
+              }}
+            >
+              📄 Baixar PDF
+            </button>
           </div>
         </div>
       </div>

@@ -19,14 +19,17 @@ urlpatterns = [
     path('mq135/', mq135_views.mostrar_dados, name='mostrar_dados_mq135'),
     path('mq135/relatorio-html/', mq135_views.mostrar_relatorio, name='mostrar_relatorio_mq135'),
     path('mq135/relatorio/', mq135_views.relatorio_api, name='relatorio_mq135_api'),
+    path('mq135/download-pdf/', mq135_views.download_pdf, name='download_pdf_mq135'),
 
     # MQ2
     path('mq2/', mq2_views.mostrar_dados, name='mostrar_dados_mq2'),
     path('mq2/relatorio-html/', mq2_views.mostrar_relatorio, name='mostrar_relatorio_mq2'),
     path('mq2/relatorio/', mq2_views.relatorio_api, name='relatorio_mq2_api'),
+    path('mq2/download-pdf/', mq2_views.download_pdf, name='download_pdf_mq2'),
     
     # MQ7
     path('mq7/', mq7_views.mostrar_dados, name='mostrar_dados_mq7'),
     path('mq7/relatorio-html/', mq7_views.mostrar_relatorio, name='mostrar_relatorio_mq7'),
     path('mq7/relatorio/', mq7_views.relatorio_api, name='relatorio_mq7_api'),
+    path('mq7/download-pdf/', mq7_views.download_pdf, name='download_pdf_mq7'),
 ]

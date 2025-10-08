@@ -1,7 +1,8 @@
 from django.shortcuts import render
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from .models import DadosSensor_mq135
-from .utils import gerar_relatorio
+from .utils import gerar_relatorio, obter_dados_mensais_completos
+from .pdf_utils import gerar_pdf_relatorio
 
 
 
@@ -48,6 +49,17 @@ def mostrar_relatorio(request):
 def relatorio_api(request):
     usuario_id = request.GET.get('usuario_id')
     relatorio = gerar_relatorio(usuario_id)
+    if isinstance(relatorio, str):
+        return JsonResponse({'message': relatorio})
     return JsonResponse(relatorio)
+
+# Download PDF do relatório
+def download_pdf(request):
+    usuario_id = request.GET.get('usuario_id')
+    buffer = gerar_pdf_relatorio(usuario_id)
+    
+    response = HttpResponse(buffer.getvalue(), content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="relatorio_mq135.pdf"'
+    return response
 
 

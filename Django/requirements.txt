@@ -1,6 +1,7 @@
 Django==5.2.6
 djangorestframework==3.16.1
 django-cors-headers==4.7.0
+reportlab==4.0.4
 
 # Dependências científicas para previsão avançada
 numpy==2.3.2
