@@ -21,6 +21,7 @@ function Graficos01() {
   const [modalPerfilAberto, setModalPerfilAberto] = useState(false);
   const { usuario } = useAuth();
   const { espSelecionado, tipoESP } = useESP();
+  const [showGasAlert, setShowGasAlert] = useState(false);
 
   useEffect(() => {
     // Redirecionar se não estiver logado
@@ -331,6 +332,18 @@ function Graficos01() {
         isOpen={modalPerfilAberto} 
         onClose={() => setModalPerfilAberto(false)} 
       />
+
+       {showGasAlert && (
+          <div className="gas-alert-cadastro" role="alert" aria-live="assertive">
+            <div className="gas-alert-content">
+              <strong>ALERTA:</strong>
+              <span> Vazamento de gás detectado</span>
+            </div>
+            <div className="gas-alert-actions">
+            </div>
+          </div>
+        )}
+
     </div>
   );
 }

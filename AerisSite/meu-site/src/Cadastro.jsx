@@ -3,6 +3,7 @@ import './App.css';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 import axios from 'axios';
+import { useTheme } from './ThemeContext';
 
 function Cadastro() {
   const [telaAtual, setTelaAtual] = useState('login');
@@ -21,6 +22,8 @@ function Cadastro() {
   const navigate = useNavigate();
   const { login } = useAuth();
   const [mostrarPopup, setMostrarPopup] = useState(false);
+  const [showGasAlert, setShowGasAlert] = useState(false); //o setShowGasAlert não está usando pq o trem não tem nada ativando ele
+  const { theme, toggleTheme } = useTheme();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -218,6 +221,37 @@ function Cadastro() {
               >
                 Voltar para a tela inicial
               </button>
+
+              <button
+              type="button"
+              onClick={toggleTheme}
+              style={{
+                position: 'fixed',
+                top: 20,
+                right: 20,
+                zIndex: 2000,
+                padding: '0.5em 1em',
+                borderRadius: '1em',
+                border: 'none',
+                background: theme === 'dark' ? '#222' : '#eee',
+                color: theme === 'dark' ? '#fff' : '#222',                  cursor: 'pointer',
+                 fontWeight: 'bold'
+              }}
+              >
+                {theme === 'dark' ? 'Modo Claro' : 'Modo Escuro'}
+              </button>
+
+              {showGasAlert && (
+                <div className="gas-alert" role="alert" aria-live="assertive">
+                  <div className="gas-alert-content">
+                    <strong>ALERTA:</strong>
+                    <span> Vazamento de gás detectado</span>
+                  </div>
+                <div className="gas-alert-actions">
+                </div>
+                </div>
+              )}
+
             </form>
             </div>
           </>
@@ -312,7 +346,7 @@ function Cadastro() {
         
         {telaAtual === 'cadastro' && (
           <>
-          <div className="container-cadastro">
+          <div className="container-cadastro" style={{ background: '#f5f5f5' }}>
             <div className="logo-Cadastro">
               <img src="/AerisLOGOsemBG 2.png" className="logo-imagem-cadastro" />
               <div className="logo-Cadastro-Palavra">
@@ -393,6 +427,37 @@ function Cadastro() {
               >
                 Voltar para a tela inicial
               </button>
+
+              <button
+              type="button"
+              onClick={toggleTheme}
+              style={{
+                position: 'fixed',
+                top: 20,
+                right: 20,
+                zIndex: 2000,
+                padding: '0.5em 1em',
+                borderRadius: '1em',
+                border: 'none',
+                background: theme === 'dark' ? '#222' : '#eee',
+                color: theme === 'dark' ? '#fff' : '#222',                  cursor: 'pointer',
+                 fontWeight: 'bold'
+              }}
+              >
+                {theme === 'dark' ? 'Modo Claro' : 'Modo Escuro'}
+              </button>
+
+              {showGasAlert && (
+                <div className="gas-alert-cadastro" role="alert" aria-live="assertive">
+                  <div className="gas-alert-content">
+                    <strong>ALERTA:</strong>
+                    <span> Vazamento de gás detectado</span>
+                  </div>
+                <div className="gas-alert-actions">
+                </div>
+                </div>
+              )}
+
             </form>
 
           </div>
