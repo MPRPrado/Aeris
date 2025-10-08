@@ -19,9 +19,9 @@ function Graficos02() {
   const [relatorio, setRelatorio] = useState('');
   const [filtro, setFiltro] = useState('mensal'); // mensal, semanal, diario
   const [modalPerfilAberto, setModalPerfilAberto] = useState(false);
+  const [showGasAlert, setShowGasAlert] = useState(false);
   const { usuario } = useAuth();
   const { espSelecionado, tipoESP } = useESP();
-  const [showGasAlert, setShowGasAlert] = useState(false);
 
   useEffect(() => {
     // Redirecionar se não estiver logado
@@ -124,6 +124,24 @@ function Graficos02() {
           valor: parseFloat(item.co_ppm),
           timestamp: item.timestamp
         }));
+        
+       
+        const ultimos70 = dadosFormatados.slice(-70);
+        const valoresAltos = ultimos70.filter(item => item.valor > 300);
+        
+       
+        const agora = Math.floor(Date.now() / 60000); 
+        const ultimoAlerta = localStorage.getItem('ultimoAlertaMQ7');
+        
+        if (valoresAltos.length > 0 && ultimoAlerta !== agora.toString()) {
+          setShowGasAlert(true);
+          localStorage.setItem('ultimoAlertaMQ7', agora.toString());
+          setTimeout(() => {
+            setShowGasAlert(false);
+          }, 10000);
+        }
+         
+        
 
         // Processar dados baseado no filtro
         let dadosProcessados = [];

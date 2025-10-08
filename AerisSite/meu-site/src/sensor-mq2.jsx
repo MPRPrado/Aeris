@@ -1,5 +1,5 @@
 // src/App.jsx
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import './App.css';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
 import { useNavigate } from "react-router-dom";
@@ -19,9 +19,10 @@ function Graficos01() {
   const [relatorio, setRelatorio] = useState('');
   const [filtro, setFiltro] = useState('mensal'); // mensal, semanal, diario
   const [modalPerfilAberto, setModalPerfilAberto] = useState(false);
+  const [showGasAlert, setShowGasAlert] = useState(false);
+  const alertaJaMostrado = useRef(false);
   const { usuario } = useAuth();
   const { espSelecionado, tipoESP } = useESP();
-  const [showGasAlert, setShowGasAlert] = useState(false);
 
   useEffect(() => {
     // Redirecionar se não estiver logado
@@ -135,6 +136,28 @@ function Graficos01() {
         
         console.log('Total de dados recebidos:', dadosFormatados.length);
         console.log('Filtro atual:', filtro);
+        
+        
+        
+        const ultimos70 = dadosFormatados.slice(-70);
+        const valoresAltos = ultimos70.filter(item => item.valor > 5000);
+        console.log('Valores dos últimos 70:', ultimos70.map(item => item.valor));
+        console.log('Valores acima de 5000:', valoresAltos.length);
+        console.log('Estado atual do alerta:', showGasAlert);
+        
+        
+        const agora = Math.floor(Date.now() / 60000); 
+        const ultimoAlerta = localStorage.getItem('ultimoAlertaMQ2');
+        
+        if (valoresAltos.length > 0 && ultimoAlerta !== agora.toString()) {
+          console.log('Ativando alerta!');
+          setShowGasAlert(true);
+          localStorage.setItem('ultimoAlertaMQ2', agora.toString());
+          setTimeout(() => {
+            console.log('Desativando alerta!');
+            setShowGasAlert(false);
+          }, 10000);
+        }
 
         // Processar dados baseado no filtro
         let dadosProcessados = [];

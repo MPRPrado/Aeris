@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 import ModalPerfil from './ModalPerfil';
 
+
+
 function App() {
   const navigate = useNavigate();
   const { usuario } = useAuth();
@@ -110,7 +112,7 @@ function App() {
         </p>
         <button
           className="botaoSuporte"
-          onClick={() => navigate('/contato-suporte')}
+          onClick={() => window.open('https://wa.me/35998954131', '_blank')}
         >
           Contate o Suporte
         </button>
