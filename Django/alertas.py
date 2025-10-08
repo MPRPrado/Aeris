@@ -7,9 +7,9 @@ def enviar_alerta_email(valor_ppm, sensor_tipo, usuario_email):
     """
     # Definir limites por sensor
     limites = {
-        'mq2':10,   # Butano
+        'mq2': 30000,   # Butano
         'mq7': 8000,   # Monóxido de Carbono  
-        'mq135': 300   # Amônia
+        'mq135': 1300   # CO2
     }
     
     limite = limites.get(sensor_tipo, 0)

@@ -1,11 +1,11 @@
 body {
-  background: #fff;
+  background: #f5f5f5;
   margin: 0;
   padding: 0;
 }
 
 #root {
-  background: #fff;
+  background: #f5f5f5;
   width: 100vw;
   max-width: 100%;
   margin: 0;
@@ -134,7 +134,7 @@ body {
   width: 100vw;
   height: 100vh;
   overflow-y: auto;
-  background: #fff;
+  background: #f5f5f5;
   z-index: 9999;
   display: flex;
   flex-direction: column;
@@ -374,7 +374,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: #fff;
+  background: #f5f5f5;
 }
 
 /* Para a tela do sensor */
@@ -385,7 +385,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #fff;
+  background: #f5f5f5;
   z-index: 1;
   padding: 0 32px;
   margin-top: -0em;
@@ -524,7 +524,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #fff;
+  background: #f5f5f5;
   overflow: hidden;
 }
 
@@ -1246,4 +1246,109 @@ body {
   .mensagem-usar-email h2, .mensagem-usar-email-cadastro h2 {
     font-size: 1.2em;
   }
+}
+
+/* ============================= Modo escuro ============================= */
+body.dark-mode,
+.dark-mode .cadastro-container,
+.dark-mode .container-cadastro,
+.dark-mode .caixa-laranja,
+.dark-mode .caixa-laranja-cadastro {
+  background: #181818 !important;
+  color: #fff !important;
+}
+
+.dark-mode input,
+.dark-mode .input-Escrita {
+  background: #222 !important;
+  color: #fff !important;
+  border-color: #444 !important;
+}
+
+.dark-mode .botao-entrar,
+.dark-mode .botao-criar-conta,
+.dark-mode .botao-entrar-cadastro {
+  background: #333 !important;
+  color: #fff !important;
+  border: 1px solid #fff !important;
+}
+
+.dark-mode .caixa-laranja,
+.dark-mode .caixa-laranja-cadastro {
+  background: linear-gradient(45deg, #333, #222) !important;
+}
+
+.dark-mode .logo-Eris-Palavra,
+.dark-mode .logo-Cadastro-Palavra,
+.dark-mode .v-virado,
+.dark-mode .v-virado-cadastro{
+  color: #fff;
+}
+
+.dark-mode .mensagem-entrar,
+.dark-mode .mensagem-cadastrar,
+.dark-mode .mensagem-usar-email,
+.dark-mode .mensagem-usar-email-cadastro {
+  color: #fff;
+}
+
+
+/* ================== Vazamento do gás ============================================= */
+/* Tela de Login */
+@keyframes piscar {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.18; transform: scale(1.03); }
+}
+
+.gas-alert {
+  position: fixed;
+  top: 20px;
+  right: 60em;
+  background: linear-gradient(90deg, #ff7940, #ff0000);
+  color: #fff;
+  padding: 20px 24px;           /* ajustado para ficar proporcional */
+  border-radius: 12px;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.25);
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;       /* empilha conteúdo e botão */
+  align-items: center;          /* centraliza horizontalmente */
+  justify-content: center;      /* centraliza verticalmente */
+  text-align: center;           /* centraliza texto */
+  gap: 8px;                     /* espaço entre conteúdo e botão */
+  min-width: 260px;
+  animation: piscar 1s infinite;
+}
+
+.gas-alert-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;          /* centraliza texto e elementos internos */
+  justify-content: center;
+}
+
+.gas-alert-content strong {
+  font-size: 1.7em;
+  margin-bottom: 2px;
+}
+
+/*Tela de cadastro*/
+.gas-alert-cadastro {
+  position: fixed;
+  top: 20px;
+  right: 4em;
+  background: linear-gradient(90deg, #ff7940, #ff0000);
+  color: #fff;
+  padding: 20px 24px;           /* ajustado para ficar proporcional */
+  border-radius: 12px;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.25);
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;       /* empilha conteúdo e botão */
+  align-items: center;          /* centraliza horizontalmente */
+  justify-content: center;      /* centraliza verticalmente */
+  text-align: center;           /* centraliza texto */
+  gap: 8px;                     /* espaço entre conteúdo e botão */
+  min-width: 260px;
+  animation: piscar 1s infinite;
 }
